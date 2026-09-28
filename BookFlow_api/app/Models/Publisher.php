@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Publisher extends Model
 {
     protected $fillable = [
-        'first_name',
+        'name',
+        'slug',
+        'country',
         'website',
         'email',
         'phone',

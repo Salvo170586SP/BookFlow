@@ -12,11 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('publishers', function (Blueprint $table) {
+            //tabella editori
             $table->id();
             $table->string('name')->unique();
+            $table->string('slug')->unique();
+            $table->string('country', 2)->nullable();
             $table->string('website')->nullable();
             $table->string('email')->nullable();
-            $table->string('phone', 30)->nullable();
+            $table->string('phone')->nullable();
             $table->timestamps();
         });
     }
