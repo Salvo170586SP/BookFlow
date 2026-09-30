@@ -5,7 +5,8 @@ import http, { getCsrfCookie } from "@/api/http";
 export interface User {
     id: number
     name: string
-    email: string
+    email: string,
+    roles: string[]
 }
 
 interface LoginPayload {
@@ -24,6 +25,9 @@ export const useAuthStore = defineStore('auth', () => {
     const ready = ref(false)
 
     const isAuthenticated = computed(() => user.value !== null)
+
+    const hasRole = (role: string) => user.value?.roles.includes(role) ?? false
+    const hasAnyRole = (...roles: string[]) => roles.some(hasRole)
 
     // Recupera i dati dell'utente dal token salvato (serve dopo un refresh della pagina)
     async function fetchUser() {
@@ -64,6 +68,6 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
-    return { user, ready, isAuthenticated, register, login, logout, fetchUser, init }
+    return { user, ready, isAuthenticated, register, login, logout, fetchUser, init, hasRole, hasAnyRole}
 })
 

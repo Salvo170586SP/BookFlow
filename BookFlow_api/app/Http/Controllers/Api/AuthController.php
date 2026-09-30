@@ -12,12 +12,14 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
     public function register(AuthRegisterRequest $request): Response
     {
         $user = User::create($request->validated());
+        $user->assignRole('member');
 
         // Effettuiamo il login subito dopo la registrazione
         Auth::login($user);
@@ -50,12 +52,8 @@ class AuthController extends Controller
         return response()->noContent();
     }
 
-    public function me(Request $request): JsonResponse
+    public function me(Request $request): UserResource
     {
-        $user = $request->user();
-
-        return response()->json([
-            'data' => $user,
-        ]);
+        return new UserResource($request->user()->load('roles'));
     }
 }
