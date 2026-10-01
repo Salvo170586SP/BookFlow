@@ -1,0 +1,118 @@
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import type { Category, PaginationMeta } from '../../types/category'
+import { fetchCategories } from '../../api/categories'
+
+const route = useRoute()
+const router = useRouter()
+
+const categories = ref<Category[]>([])
+const meta = ref<PaginationMeta | null>(null)
+console.log(categories.value);
+
+const loading = ref(false)
+const error = ref<string | null>(null)
+
+const page = computed(() => Math.max(Number(route.query.page) || 1, 1))
+
+// Contatore delle richieste: serve a ignorare le risposte arrivate in ritardo
+let lastRequest = 0
+
+async function load() {
+  const requestId = ++lastRequest
+  loading.value = true
+  error.value = null
+
+  try {
+    const result = await fetchCategories(page.value)
+
+    // Se nel frattempo è partita una richiesta più recente, questa risposta è vecchia
+    if (requestId !== lastRequest) return
+
+    if (result.meta.last_page > 0 && page.value > result.meta.last_page) {
+      router.replace({ query: { ...route.query, page: result.meta.last_page } })
+      return
+    }
+
+    categories.value = result.data
+    meta.value = result.meta
+  } catch {
+    if (requestId === lastRequest) {
+      error.value = 'Impossibile caricare le categorie. Riprova.'
+    }
+  } finally {
+    if (requestId === lastRequest) {
+      loading.value = false
+    }
+  }
+}
+
+function goToPage(nextPage: number) {
+  router.push({ query: { ...route.query, page: nextPage } })
+}
+
+watch(page, load, { immediate: true })
+</script>
+
+<template>
+  <div class="min-h-full bg-slate-50">
+    <main class="mx-auto max-w-7xl px-4 py-10">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Categorie</h1>
+      </div>
+
+      <p v-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ error }}
+      </p>
+
+      <div
+        class="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm transition-opacity"
+        :class="{ 'opacity-60': loading }"
+      >
+        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+          <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <tr>
+              <th class="px-4 py-3 w-80">Nome</th>
+              <th class="px-4 py-3">Libri</th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-slate-100">
+            <tr v-for="category in categories" :key="category.id">
+              <td class="px-4 py-3 font-medium text-slate-900">{{ category.name }}</td>
+              <td class="px-4 py-3 text-slate-600">{{ category.books_count }}</td>
+            </tr>
+
+            <tr v-if="!loading && categories.length === 0">
+              <td colspan="2" class="px-4 py-8 text-center text-slate-500">
+                Nessuna categporia trovato.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div v-if="meta" class="mt-4 flex items-center justify-between text-sm text-slate-600">
+        <p>Pagina {{ meta.current_page }} di {{ meta.last_page }} · {{ meta.total }} categorie</p>
+
+        <div class="flex gap-2">
+          <button
+            :disabled="meta.current_page <= 1 || loading"
+            class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+            @click="goToPage(meta.current_page - 1)"
+          >
+            Precedente
+          </button>
+          <button
+            :disabled="meta.current_page >= meta.last_page || loading"
+            class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+            @click="goToPage(meta.current_page + 1)"
+          >
+            Successiva
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+</template>

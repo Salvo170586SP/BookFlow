@@ -1,23 +1,9 @@
 <script setup lang="ts">
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from './../../stores/auth'
 import { useRouter } from 'vue-router'
-import { computed } from 'vue'
 
 const auth = useAuthStore()
 const router = useRouter()
-
-// Se un utente avesse più ruoli, vince il primo in ordine di importanza
-const rolePriority = ['admin', 'member']
-
-const roleLabels: Record<string, string> = {
-  admin: 'Admin',
-  member: 'Membro',
-}
-
-const roleLabel = computed(() => {
-  const role = rolePriority.find((r) => auth.hasRole(r))
-  return role ? roleLabels[role] : ''
-})
 
 async function logout() {
   await auth.logout()
@@ -42,8 +28,8 @@ async function logout() {
 
     <main class="mx-auto max-w-5xl px-4 py-10">
       <h1 class="text-2xl font-bold tracking-tight text-slate-900">
-        Benvenuto {{ roleLabel }},
-        <p v-if="auth.user">{{ auth.user.name }}</p>
+        Benvenuto,
+        <span v-if="auth.user">{{ auth.user.name }}</span>
       </h1>
       <p class="mt-1 text-slate-600">Ecco il riepilogo del tuo account.</p>
 

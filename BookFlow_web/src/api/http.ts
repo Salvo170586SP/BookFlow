@@ -10,8 +10,6 @@ export const http = axios.create({
     withXSRFToken: true,
 })
 
-console.log('backendUrl:', backendUrl)
-
 // Da chiamare prima di login e registrazione
 export function getCsrfCookie() {
     return http.get('/sanctum/csrf-cookie', { baseURL: backendUrl })

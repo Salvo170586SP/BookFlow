@@ -1,10 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import LoginView from '@/pages/LoginView.vue'
-import DashboardView from '@/pages/DashboardView.vue'
+import DashboardView from '@/pages/guest/DashboardView.vue'
 import RegisterView from '@/pages/RegisterView.vue'
 import ViewLayout from '@/ViewLayout.vue'
+import AdminLayout from '@/pages/admin/AdminLayout.vue'
+import AdminDashboardView from '@/pages/admin/AdminDashboardView.vue'
+import ForbiddenView from '@/pages/ForbiddenView.vue'
+import BooksView from '@/pages/admin/BooksView.vue'
+import AuthorsView from '@/pages/admin/AuthorsView.vue'
+import CategoriesView from '@/pages/admin/CategoriesView.vue'
 
+declare module 'vue-router' {
+  interface RouteMeta {
+    requiresAuth?: boolean
+    guest?: boolean
+    roles?: string[]
+  }
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,7 +32,22 @@ const router = createRouter({
       path: '/register', name: 'register', component: RegisterView, meta: { guest: true }
     },
     {
-      path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true }
+      path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true, roles: ['member'] }
+    },
+    {
+      path: '/admin',
+      component: AdminLayout,
+      redirect: '/admin/dashboard',
+      meta: { requiresAuth: true, roles: ['admin'] },
+      children: [
+        { path: 'dashboard', name: 'AdminDashboard', component: AdminDashboardView },
+        { path: 'books', name: 'AdminBooks', component: BooksView },
+        { path: 'authors', name: 'AdminAuthors', component: AuthorsView },
+        { path: 'categories', name: 'AdminCategories', component: CategoriesView },
+      ],
+    },
+    {
+      path: '/forbidden', name: 'forbidden', component: ForbiddenView, meta: { requiresAuth: true },
     },
   ],
 })
@@ -36,7 +64,12 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.guest && auth.isAuthenticated) {
-    return { name: 'dashboard' }
+    return auth.hasRole('admin') ? '/admin/dashboard' : { name: 'dashboard' }
+  }
+
+  // La pagina richiede dei ruoli che l'utente non ha: accesso negato
+  if (to.meta.roles && !auth.hasAnyRole(...to.meta.roles)) {
+    return { name: 'forbidden' }
   }
 })
 

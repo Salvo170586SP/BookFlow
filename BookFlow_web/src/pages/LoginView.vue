@@ -17,7 +17,7 @@ async function submit() {
 
   try {
     await auth.login(form.value)
-    router.push('/dashboard')
+    router.push(auth.hasRole('admin') ? '/admin/dashboard' : '/dashboard')
   } catch (e) {
     // 422 = errori di validazione: sono nel formato { errors: { campo: [messaggi] } }
     if (axios.isAxiosError(e) && e.response?.status === 422) {

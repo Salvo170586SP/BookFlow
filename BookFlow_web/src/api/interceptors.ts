@@ -2,6 +2,7 @@ import axios from 'axios'
 import type { Router } from 'vue-router'
 import http from '@/api/http'
 import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notification'
 
 export function setupInterceptors(router: Router) {
   http.interceptors.response.use(
@@ -14,6 +15,11 @@ export function setupInterceptors(router: Router) {
 
       const status = axios.isAxiosError(error) ? error.response?.status : undefined
       const sessionExpired = status === 401 || status === 419
+      
+      const notification = useNotificationStore()
+      if (status === 403) {
+        notification.show('Non hai i permessi per eseguire questa azione.', 'error')
+      }
 
       // Reagiamo solo se l'utente credeva di essere loggato
       if (sessionExpired && auth.isAuthenticated) {
