@@ -10,6 +10,8 @@ import ForbiddenView from '@/pages/ForbiddenView.vue'
 import BooksView from '@/pages/admin/BooksView.vue'
 import AuthorsView from '@/pages/admin/AuthorsView.vue'
 import CategoriesView from '@/pages/admin/CategoriesView.vue'
+import CategoriesCreateView from '@/pages/admin/CategoriesCreateView.vue'
+import CategoriesEditView from '@/pages/admin/CategoriesEditView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -44,6 +46,8 @@ const router = createRouter({
         { path: 'books', name: 'AdminBooks', component: BooksView },
         { path: 'authors', name: 'AdminAuthors', component: AuthorsView },
         { path: 'categories', name: 'AdminCategories', component: CategoriesView },
+        { path: 'categories/create', name: 'AdminCategoriesCreate', component: CategoriesCreateView },
+        { path: 'categories/edit/:id', name: 'AdminCategoriesEdit', component: CategoriesEditView },
       ],
     },
     {

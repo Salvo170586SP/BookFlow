@@ -23,7 +23,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/books', [BookController::class, 'index']);
     Route::get('/authors', [AuthorController::class, 'index']);
-    
+
     Route::get('/categories/options', [CategoryController::class, 'options']);
     Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/categories/{category}', [CategoryController::class, 'show']);
+    Route::post('/categories', [CategoryController::class, 'store']);
+    Route::put('/categories/{category}', [CategoryController::class, 'update']);
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
 });

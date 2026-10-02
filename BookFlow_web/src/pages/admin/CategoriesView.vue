@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import type { Category, PaginationMeta } from '../../types/category'
 import { fetchCategories } from '../../api/categories'
+import { useCategoryStore } from '../../stores/category'
 
 const route = useRoute()
 const router = useRouter()
+const categoryStore = useCategoryStore()
 
 const categories = ref<Category[]>([])
 const meta = ref<PaginationMeta | null>(null)
-console.log(categories.value);
 
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -52,6 +53,11 @@ function goToPage(nextPage: number) {
   router.push({ query: { ...route.query, page: nextPage } })
 }
 
+async function deleteCategory(category_id: any) {
+  await categoryStore.destroy(category_id)
+  load()
+}
+
 watch(page, load, { immediate: true })
 </script>
 
@@ -60,6 +66,11 @@ watch(page, load, { immediate: true })
     <main class="mx-auto max-w-7xl px-4 py-10">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Categorie</h1>
+        <RouterLink
+          to="/admin/categories/create"
+          class="bg-green-500 hover:bg-green-700 text-white font-semibold px-3 py-1 rounded-lg"
+          >Crea</RouterLink
+        >
       </div>
 
       <p v-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -75,6 +86,7 @@ watch(page, load, { immediate: true })
             <tr>
               <th class="px-4 py-3 w-80">Nome</th>
               <th class="px-4 py-3">Libri</th>
+              <th class="px-4 py-3 text-end">Azioni</th>
             </tr>
           </thead>
 
@@ -82,6 +94,22 @@ watch(page, load, { immediate: true })
             <tr v-for="category in categories" :key="category.id">
               <td class="px-4 py-3 font-medium text-slate-900">{{ category.name }}</td>
               <td class="px-4 py-3 text-slate-600">{{ category.books_count }}</td>
+              <td class="px-4 py-3 text-slate-600">
+                <div class="text-end space-x-3">
+                  <RouterLink
+                    :to="`/admin/categories/edit/${category.id}`"
+                    class="bg-blue-500 hover:bg-blue-600 text-white cursor-pointer px-3 py-1 rounded-lg"
+                  >
+                    Modifica
+                  </RouterLink>
+                  <button
+                    @click="() => deleteCategory(category.id)"
+                    class="bg-red-500 hover:bg-red-600 text-white cursor-pointer px-3 py-1 rounded-lg"
+                  >
+                    Elimina
+                  </button>
+                </div>
+              </td>
             </tr>
 
             <tr v-if="!loading && categories.length === 0">
