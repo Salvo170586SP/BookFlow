@@ -23,8 +23,6 @@ async function loadCategories() {
   }
 }
 
- 
-
 // La pagina corrente sta nell'URL (?page=2): il refresh e il tasto "indietro" funzionano
 const page = computed(() => Math.max(Number(route.query.page) || 1, 1))
 const categoryId = computed(() => {
@@ -93,9 +91,16 @@ loadCategories()
 <template>
   <div class="min-h-full bg-slate-50">
     <main class="mx-auto max-w-7xl px-4 py-10">
-      <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Catalogo</h1>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 pb-7">Catalogo</h1>
 
+      <div v-if="loading && books.length === 0" class="flex flex-col justify-center items-center">
+        <div
+          class="size-8 animate-spin rounded-full border-4 border-solid border-gray-300 border-t-black"
+        ></div>
+        <span class="text-black">Caricamento...</span>
+      </div>
+
+      <section v-else>
         <select
           id="categories"
           name="category"
@@ -108,67 +113,67 @@ loadCategories()
             {{ category.name }}
           </option>
         </select>
-      </div>
 
-      <p v-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
-        {{ error }}
-      </p>
+        <p v-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+          {{ error }}
+        </p>
 
-      <div
-        class="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm transition-opacity"
-        :class="{ 'opacity-60': loading }"
-      >
-        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
-          <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
-            <tr>
-              <th class="px-4 py-3">Titolo</th>
-              <th class="px-4 py-3">Autori</th>
-              <th class="px-4 py-3">Categoria</th>
-              <th class="px-4 py-3">Editore</th>
-              <th class="px-4 py-3">Anno</th>
-            </tr>
-          </thead>
+        <div
+          class="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm transition-opacity"
+          :class="{ 'opacity-60': loading }"
+        >
+          <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <tr>
+                <th class="px-4 py-3">Titolo</th>
+                <th class="px-4 py-3">Autori</th>
+                <th class="px-4 py-3">Categoria</th>
+                <th class="px-4 py-3">Editore</th>
+                <th class="px-4 py-3">Anno</th>
+              </tr>
+            </thead>
 
-          <tbody class="divide-y divide-slate-100">
-            <tr v-for="book in books" :key="book.id">
-              <td class="px-4 py-3 font-medium text-slate-900">{{ book.title }}</td>
-              <td class="px-4 py-3 text-slate-600">
-                {{ book.authors.map((a) => a.name).join(', ') }}
-              </td>
-              <td class="px-4 py-3 text-slate-600">{{ book.category.name }}</td>
-              <td class="px-4 py-3 text-slate-600">{{ book.publisher?.name ?? '—' }}</td>
-              <td class="px-4 py-3 text-slate-600">{{ book.published_year ?? '—' }}</td>
-            </tr>
+            <tbody class="divide-y divide-slate-100">
+              <tr v-for="book in books" :key="book.id">
+                <td class="px-4 py-3 font-medium text-slate-900">{{ book.title }}</td>
+                <td class="px-4 py-3 text-slate-600">
+                  {{ book.authors.map((a) => a.name).join(', ') }}
+                </td>
+                <td class="px-4 py-3 text-slate-600">{{ book.category.name }}</td>
+                <td class="px-4 py-3 text-slate-600">{{ book.publisher?.name ?? '—' }}</td>
+                <td class="px-4 py-3 text-slate-600">{{ book.published_year ?? '—' }}</td>
+              </tr>
 
-            <tr v-if="!loading && books.length === 0">
-              <td colspan="5" class="px-4 py-8 text-center text-slate-500">
-                Nessun libro trovato.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div v-if="meta" class="mt-4 flex items-center justify-between text-sm text-slate-600">
-        <p>Pagina {{ meta.current_page }} di {{ meta.last_page }} · {{ meta.total }} libri</p>
-
-        <div class="flex gap-2">
-          <button
-            :disabled="meta.current_page <= 1 || loading"
-            class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-            @click="goToPage(meta.current_page - 1)"
-          >
-            Precedente
-          </button>
-          <button
-            :disabled="meta.current_page >= meta.last_page || loading"
-            class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-            @click="goToPage(meta.current_page + 1)"
-          >
-            Successiva
-          </button>
+              <tr v-if="!loading && books.length === 0">
+                <td colspan="5" class="px-4 py-8 text-center text-slate-500">
+                  Nessun libro trovato.
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
+
+        <div v-if="meta" class="mt-4 flex items-center justify-between text-sm text-slate-600">
+          <p>Pagina {{ meta.current_page }} di {{ meta.last_page }} · {{ meta.total }} libri</p>
+
+          <div class="flex gap-2">
+            <button
+              :disabled="meta.current_page <= 1 || loading"
+              class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+              @click="goToPage(meta.current_page - 1)"
+            >
+              Precedente
+            </button>
+            <button
+              :disabled="meta.current_page >= meta.last_page || loading"
+              class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+              @click="goToPage(meta.current_page + 1)"
+            >
+              Successiva
+            </button>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 </template>

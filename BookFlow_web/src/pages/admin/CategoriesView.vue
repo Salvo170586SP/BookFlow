@@ -77,70 +77,77 @@ watch(page, load, { immediate: true })
         {{ error }}
       </p>
 
-      <div
-        class="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm transition-opacity"
-        :class="{ 'opacity-60': loading }"
-      >
-        <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
-          <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
-            <tr>
-              <th class="px-4 py-3 w-80">Nome</th>
-              <th class="px-4 py-3">Libri</th>
-              <th class="px-4 py-3 text-end">Azioni</th>
-            </tr>
-          </thead>
-
-          <tbody class="divide-y divide-slate-100">
-            <tr v-for="category in categories" :key="category.id">
-              <td class="px-4 py-3 font-medium text-slate-900">{{ category.name }}</td>
-              <td class="px-4 py-3 text-slate-600">{{ category.books_count }}</td>
-              <td class="px-4 py-3 text-slate-600">
-                <div class="text-end space-x-3">
-                  <RouterLink
-                    :to="`/admin/categories/edit/${category.id}`"
-                    class="bg-blue-500 hover:bg-blue-600 text-white cursor-pointer px-3 py-1 rounded-lg"
-                  >
-                    Modifica
-                  </RouterLink>
-                  <button
-                    @click="() => deleteCategory(category.id)"
-                    class="bg-red-500 hover:bg-red-600 text-white cursor-pointer px-3 py-1 rounded-lg"
-                  >
-                    Elimina
-                  </button>
-                </div>
-              </td>
-            </tr>
-
-            <tr v-if="!loading && categories.length === 0">
-              <td colspan="2" class="px-4 py-8 text-center text-slate-500">
-                Nessuna categporia trovato.
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div v-if="loading" class="flex flex-col justify-center items-center">
+        <div
+          class="size-8 animate-spin rounded-full border-4 border-solid border-gray-300 border-t-black"
+        ></div>
+        <span class="text-black">Caricamento...</span>
       </div>
+      <section v-else>
+        <div
+          class="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm transition-opacity"
+          :class="{ 'opacity-60': loading }"
+        >
+          <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <tr>
+                <th class="px-4 py-3 w-80">Nome</th>
+                <th class="px-4 py-3">Libri</th>
+                <th class="px-4 py-3 text-end">Azioni</th>
+              </tr>
+            </thead>
 
-      <div v-if="meta" class="mt-4 flex items-center justify-between text-sm text-slate-600">
-        <p>Pagina {{ meta.current_page }} di {{ meta.last_page }} · {{ meta.total }} categorie</p>
+            <tbody class="divide-y divide-slate-100">
+              <tr v-for="category in categories" :key="category.id">
+                <td class="px-4 py-3 font-medium text-slate-900">{{ category.name }}</td>
+                <td class="px-4 py-3 text-slate-600">{{ category.books_count }}</td>
+                <td class="px-4 py-3 text-slate-600">
+                  <div class="text-end space-x-3">
+                    <RouterLink
+                      :to="`/admin/categories/edit/${category.id}`"
+                      class="bg-blue-500 hover:bg-blue-600 text-white cursor-pointer px-3 py-1 rounded-lg"
+                    >
+                      Modifica
+                    </RouterLink>
+                    <button
+                      @click="() => deleteCategory(category.id)"
+                      class="bg-red-500 hover:bg-red-600 text-white cursor-pointer px-3 py-1 rounded-lg"
+                    >
+                      Elimina
+                    </button>
+                  </div>
+                </td>
+              </tr>
 
-        <div class="flex gap-2">
-          <button
-            :disabled="meta.current_page <= 1 || loading"
-            class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-            @click="goToPage(meta.current_page - 1)"
-          >
-            Precedente
-          </button>
-          <button
-            :disabled="meta.current_page >= meta.last_page || loading"
-            class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-            @click="goToPage(meta.current_page + 1)"
-          >
-            Successiva
-          </button>
+              <tr v-if="categories.length === 0">
+                <td colspan="3" class="px-4 py-8 text-center text-slate-500">
+                  Nessuna categoria trovato.
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
+        <div v-if="meta" class="mt-4 flex items-center justify-between text-sm text-slate-600">
+          <p>Pagina {{ meta.current_page }} di {{ meta.last_page }} · {{ meta.total }} categorie</p>
+
+          <div class="flex gap-2">
+            <button
+              :disabled="meta.current_page <= 1 || loading"
+              class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+              @click="goToPage(meta.current_page - 1)"
+            >
+              Precedente
+            </button>
+            <button
+              :disabled="meta.current_page >= meta.last_page || loading"
+              class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+              @click="goToPage(meta.current_page + 1)"
+            >
+              Successiva
+            </button>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 </template>
