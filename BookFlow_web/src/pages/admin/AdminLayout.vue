@@ -45,7 +45,7 @@ async function logout() {
           
           <RouterLink
             class="cursor-pointer px-3 py-1.5 text-lg font-medium text-white transition hover:bg-gray-700 rounded-lg"
-            to=""
+            to="/admin/members"
           >
             Membri iscritti
           </RouterLink>

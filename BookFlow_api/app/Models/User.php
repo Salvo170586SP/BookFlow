@@ -32,4 +32,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function loans(): HasMany
+    {
+        return $this->hasMany(Loan::class);
+    }
 }

@@ -12,6 +12,10 @@ import AuthorsView from '@/pages/admin/AuthorsView.vue'
 import CategoriesView from '@/pages/admin/CategoriesView.vue'
 import CategoriesCreateView from '@/pages/admin/CategoriesCreateView.vue'
 import CategoriesEditView from '@/pages/admin/CategoriesEditView.vue'
+import AuthorsDetailsView from '@/pages/admin/AuthorsDetailsView.vue'
+import MembersView from '@/pages/admin/MembersView.vue'
+import MemberDetailsView from '@/pages/admin/MemberDetailsView.vue'
+import MemberEditView from '@/pages/admin/MemberEditView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -45,9 +49,13 @@ const router = createRouter({
         { path: 'dashboard', name: 'AdminDashboard', component: AdminDashboardView },
         { path: 'books', name: 'AdminBooks', component: BooksView },
         { path: 'authors', name: 'AdminAuthors', component: AuthorsView },
+        { path: 'authors/:id/details', name: 'AdminAuthorsDetails', component: AuthorsDetailsView },
         { path: 'categories', name: 'AdminCategories', component: CategoriesView },
         { path: 'categories/create', name: 'AdminCategoriesCreate', component: CategoriesCreateView },
         { path: 'categories/edit/:id', name: 'AdminCategoriesEdit', component: CategoriesEditView },
+        { path: 'members', name: 'AdminMembers', component: MembersView },
+        { path: 'members/:id/details', name: 'AdminMembersDetails', component: MemberDetailsView },
+        { path: 'members/:id/edit', name: 'AdminMembersEdit', component: MemberEditView },
       ],
     },
     {

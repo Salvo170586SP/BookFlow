@@ -28,4 +28,23 @@ class AuthorIndexTest extends TestCase
                 'meta',
             ]);
     }
+
+    public function test_show_author_returns_only_that_authors_books(): void
+    {
+        $author = Author::factory()->create();
+        $otherAuthor = Author::factory()->create();
+        $books = Book::factory()->count(2)->create();
+        $otherBook = Book::factory()->create();
+        $author->books()->attach($books->modelKeys());
+        $otherAuthor->books()->attach($otherBook->id);
+
+        $this->actingAs(User::factory()->create())
+            ->getJson("/api/authors/{$author->id}")
+            ->assertOk()
+            ->assertJsonPath('data.id', $author->id)
+            ->assertJsonCount(2, 'data.books')
+            ->assertJsonFragment(['title' => $books[0]->title])
+            ->assertJsonFragment(['title' => $books[1]->title])
+            ->assertJsonMissing(['title' => $otherBook->title]);
+    }
 }

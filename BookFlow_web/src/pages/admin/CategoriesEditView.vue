@@ -2,21 +2,18 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
-import { useCategoryStore } from '../../stores/category'
+import { fetchCategory, updateCategories } from './../../api/categories'
 
-const category = useCategoryStore()
 const router = useRouter()
 const route = useRoute()
 
 const errors = ref<Record<string, string[]>>({})
 const loading = ref(false)
-const form = ref({name: ''})
+const form = ref({ name: '' })
 
 onMounted(async () => {
   const id = Number(route.params.id)
-
-  const currentCategory = await category.fetchCategory(id)
-
+  const currentCategory = await fetchCategory(id)
   form.value.name = currentCategory.name
 })
 
@@ -28,9 +25,7 @@ async function submit(event: Event) {
 
   try {
     const id = Number(route.params.id)
- 
-    await category.update(form.value, id)
-
+    await updateCategories(form.value, id)
     router.push('/admin/categories')
   } catch (e) {
     if (axios.isAxiosError(e) && e.response?.status === 422) {
@@ -49,26 +44,25 @@ async function submit(event: Event) {
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Modifica categoria</h1>
         <RouterLink
           to="/admin/categories"
-          class="bg-black hover:bg-gray-700 text-white font-semibold px-3 py-1 rounded-lg"
+          class="font-semibold"
           >Indietro</RouterLink
         >
       </div>
-      <form @submit.prevent="submit" class="w-100 shadow p-5 rounded-lg bg-white mx-auto">
+      <form @submit.prevent="submit" class="w-100 border border-slate-400 p-5 bg-white mx-auto">
         <label for="name" class="flex flex-col font-semibold space-y-2">
           <span>Nome*</span>
           <input
             type="text"
             id="name"
             v-model="form.name"
-            required
-            class="bg-gray-100 rounded border border-gray-300 px-1"
+            class="bg-gray-100 border border-gray-400 px-2"
           />
         </label>
         <span v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name[0] }}</span>
 
         <div class="mt-5 text-end">
           <button
-            class="bg-green-700 hover:bg-green-800 cursor-pointer rounded-lg px-3 py-1 text-white font-medium"
+            class="bg-green-700 hover:bg-green-800 cursor-pointer px-3 py-1 text-white font-medium border border-black"
           >
             Crea
           </button>

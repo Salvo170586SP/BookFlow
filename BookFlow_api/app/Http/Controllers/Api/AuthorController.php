@@ -19,4 +19,9 @@ class AuthorController extends Controller
 
         return AuthorResource::collection($authors);
     }
+
+    public function show(Author $author): AuthorResource
+    {
+        return new AuthorResource($author->load('books'));
+    }
 }

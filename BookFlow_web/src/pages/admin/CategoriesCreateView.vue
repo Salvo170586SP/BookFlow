@@ -2,24 +2,21 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import { useCategoryStore } from '../../stores/category'
-
-const category = useCategoryStore()
+import { storeCategories } from '../../api/categories'
+ 
 const router = useRouter()
-
-const form = ref({
-  name: '',
-})
-
 const errors = ref<Record<string, string[]>>({})
 const loading = ref(false)
+const form = ref({
+  name: ''
+})
 
 async function submit() {
   loading.value = true
   errors.value = {}
 
   try {
-    await category.store(form.value)
+    await storeCategories(form.value)
     router.push('/admin/categories')
   } catch (e) {
     if (axios.isAxiosError(e) && e.response?.status === 422) {
@@ -38,11 +35,11 @@ async function submit() {
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Crea categoria</h1>
         <RouterLink
           to="/admin/categories"
-          class="bg-black hover:bg-gray-700 text-white font-semibold px-3 py-1 rounded-lg"
+          class="font-semibold"
           >Indietro</RouterLink
         >
       </div>
-      <form @submit.prevent="submit" class="w-100 shadow p-5 rounded-lg bg-white mx-auto">
+      <form @submit.prevent="submit" class="w-100 p-5 border border-slate-400 bg-white mx-auto">
         <label for="name" class="flex flex-col font-semibold space-y-2">
           <span>Nome*</span>
           <input
@@ -50,14 +47,14 @@ async function submit() {
             id="name"
             v-model="form.name"
             required
-            class="bg-gray-100 rounded border border-gray-300 px-1"
+            class="bg-gray-100 border border-gray-400 px-2"
           />
         </label>
         <span v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name[0] }}</span>
 
         <div class="mt-5 text-end">
           <button
-            class="bg-green-700 hover:bg-green-800 cursor-pointer rounded-lg px-3 py-1 text-white font-medium"
+            class="bg-green-700 hover:bg-green-800 cursor-pointer border border-black px-3 py-1 text-white font-medium"
           >
             Crea
           </button>

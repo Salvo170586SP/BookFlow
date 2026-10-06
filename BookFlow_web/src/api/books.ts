@@ -7,3 +7,8 @@ export async function fetchBooks(page = 1, categoryId?: number): Promise<Paginat
   })
   return data
 }
+
+export async function fetchBook(bookId: number): Promise<Book> {
+  const { data } = await http.get<{ data: Book }>(`/books/${bookId}`)
+  return data.data
+}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import type { Author } from '../../types/author'
 import { fetchAuthors } from '../../api/authors'
 import type { PaginationMeta } from '../../types/book'
@@ -75,7 +75,7 @@ watch(page, load, { immediate: true })
 
       <section v-else>
         <div
-          class="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm transition-opacity"
+          class="mt-6 overflow-x-auto border border-slate-400 bg-white  transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
@@ -84,6 +84,7 @@ watch(page, load, { immediate: true })
                 <th class="px-4 py-3 w-80">Nome</th>
                 <th class="px-4 py-3">Bio</th>
                 <th class="px-4 py-3 text-end">Libri</th>
+                <th class="px-4 py-3 text-end">Azioni</th>
               </tr>
             </thead>
 
@@ -105,6 +106,11 @@ watch(page, load, { immediate: true })
                   >
                     {{ author.books.length }}
                   </span>
+                </td>
+                <td class="px-4 py-3 font-medium text-slate-900 text-end">
+                 <div>
+                  <RouterLink :to="`/admin/authors/${author.id}/details`">Dettagli</RouterLink>
+                 </div>
                 </td>
               </tr>
 

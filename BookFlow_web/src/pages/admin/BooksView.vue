@@ -119,7 +119,7 @@ loadCategories()
         </p>
 
         <div
-          class="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm transition-opacity"
+          class="mt-6 overflow-x-auto border border-slate-400 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">

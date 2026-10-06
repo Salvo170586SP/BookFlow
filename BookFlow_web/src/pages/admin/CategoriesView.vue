@@ -2,13 +2,11 @@
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import type { Category, PaginationMeta } from '../../types/category'
-import { fetchCategories } from '../../api/categories'
-import { useCategoryStore } from '../../stores/category'
-
+import { fetchCategories, destroyCategories } from '../../api/categories'
+ 
 const route = useRoute()
 const router = useRouter()
-const categoryStore = useCategoryStore()
-
+ 
 const categories = ref<Category[]>([])
 const meta = ref<PaginationMeta | null>(null)
 
@@ -54,7 +52,7 @@ function goToPage(nextPage: number) {
 }
 
 async function deleteCategory(category_id: any) {
-  await categoryStore.destroy(category_id)
+  await destroyCategories(category_id)
   load()
 }
 
@@ -68,7 +66,7 @@ watch(page, load, { immediate: true })
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Categorie</h1>
         <RouterLink
           to="/admin/categories/create"
-          class="bg-green-500 hover:bg-green-700 text-white font-semibold px-3 py-1 rounded-lg"
+          class="bg-green-600 hover:bg-green-700 text-white font-semibold px-3 py-1 border border-black"
           >Crea</RouterLink
         >
       </div>
@@ -85,7 +83,7 @@ watch(page, load, { immediate: true })
       </div>
       <section v-else>
         <div
-          class="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm transition-opacity"
+          class="mt-6 overflow-x-auto  border border-slate-400 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
@@ -105,13 +103,13 @@ watch(page, load, { immediate: true })
                   <div class="text-end space-x-3">
                     <RouterLink
                       :to="`/admin/categories/edit/${category.id}`"
-                      class="bg-blue-500 hover:bg-blue-600 text-white cursor-pointer px-3 py-1 rounded-lg"
+                      class="bg-blue-500 hover:bg-blue-600 text-white cursor-pointer px-3 py-1 border border-black"
                     >
                       Modifica
                     </RouterLink>
                     <button
                       @click="() => deleteCategory(category.id)"
-                      class="bg-red-500 hover:bg-red-600 text-white cursor-pointer px-3 py-1 rounded-lg"
+                      class="bg-red-500 hover:bg-red-600 text-white cursor-pointer px-3 py-1 border border-black"
                     >
                       Elimina
                     </button>
