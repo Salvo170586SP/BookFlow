@@ -5,6 +5,7 @@ import { fetchBooks } from './../../api/books'
 import type { Book, PaginationMeta } from './../../types/book'
 import type { Category } from './../../types/category'
 import { fetchCategoriesOptions } from './../../api/categories'
+import LoaderComponent from '@/components/LoaderComponent.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -93,12 +94,7 @@ loadCategories()
     <main class="mx-auto max-w-7xl px-4 py-10">
       <h1 class="text-2xl font-bold tracking-tight text-slate-900 pb-7">Catalogo</h1>
 
-      <div v-if="loading && books.length === 0" class="flex flex-col justify-center items-center">
-        <div
-          class="size-8 animate-spin rounded-full border-4 border-solid border-gray-300 border-t-black"
-        ></div>
-        <span class="text-black">Caricamento...</span>
-      </div>
+      <LoaderComponent v-if="loading && books.length === 0" />
 
       <section v-else>
         <select

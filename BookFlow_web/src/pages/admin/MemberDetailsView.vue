@@ -4,6 +4,7 @@ import { RouterLink, useRoute } from 'vue-router'
 import { destroyMemberLoan, fetchMember } from '../../api/members'
 import type { Member, MemberLoan } from '../../types/member'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
+import LoaderComponent from '@/components/LoaderComponent.vue'
 
 const showModal = ref(false)
 const selectedLoanId = ref<number | null>(null)
@@ -88,30 +89,39 @@ watch(() => route.params.id, load, { immediate: true })
         <RouterLink to="/admin/members">Indietro</RouterLink>
       </div>
 
-      <div v-if="loading" class="mt-6 flex flex-col items-center justify-center">
-        <div
-          class="size-8 animate-spin rounded-full border-4 border-solid border-gray-300 border-t-black"
-        ></div>
-        <span class="text-black">Caricamento...</span>
-      </div>
+      <LoaderComponent v-if="loading" />
 
       <p v-else-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ error }}
       </p>
 
-      <section
-        v-if="member"
-        class="mt-6 border border-slate-400 bg-white p-6"
-      >
+      <section v-if="member" class="mt-6 border border-slate-400 bg-white p-6">
         <h2 class="text-lg font-semibold text-slate-900 capitalize">{{ member.name }}</h2>
-        <div class="flex flex-col mt-3 text-sm text-slate-600">
-          <p>
-            Email:
-            <span class="font-semibold">{{ member.email || 'Nessuna email disponibile.' }}</span>
-          </p>
-          <p>
-            Iscritto dal: <span class="font-semibold">{{ formatLoanDate(member.created_at) }}</span>
-          </p>
+        <div class="flex gap-50 mt-3 text-sm text-slate-600">
+          <div>
+            <p>
+              Email:
+              <span class="font-semibold">{{ member.email || 'Nessuna email disponibile.' }}</span>
+            </p>
+            <p>
+              Iscritto dal:
+              <span class="font-semibold">{{ formatLoanDate(member.created_at) }}</span>
+            </p>
+          </div>
+          <div class="flex flex-col">
+            <p>
+              Telefono: <span class="font-semibold">{{ member.detail?.phone || '-' }}</span>
+            </p>
+            <p>
+              Indirizzo: <span class="font-semibold">{{ member.detail?.address || '-' }}</span>
+            </p>
+          </div>
+          <div>
+            <p>
+              Città di nascita:
+              <span class="font-semibold">{{ member.detail?.birth_city || '-' }}</span>
+            </p>
+          </div>
         </div>
       </section>
 
@@ -119,13 +129,12 @@ watch(() => route.params.id, load, { immediate: true })
         <p class="text-sm text-slate-600">Autore non trovato.</p>
       </section>
 
-      <section
-        v-if="member"
-        class="mt-6 border border-slate-400 bg-white p-6"
-      >
+      <section v-if="member" class="mt-6 border border-slate-400 bg-white p-6">
         <div class="flex justify-between mb-5">
           <p class="text-lg font-semibold text-slate-900">Libri in prestito</p>
-          <RouterLink class="border px-3 bg-gray-500 text-white hover:bg-gray-700" to="/admin/books">Prenota</RouterLink>
+          <RouterLink class="border px-3 bg-gray-500 text-white hover:bg-gray-700" to="/admin/books"
+            >Prenota</RouterLink
+          >
         </div>
 
         <div class="mt-3 flex flex-wrap space-y-2">

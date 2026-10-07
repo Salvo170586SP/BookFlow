@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { fetchCategory, updateCategories } from './../../api/categories'
+import LoaderComponent from '@/components/LoaderComponent.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -10,11 +11,20 @@ const route = useRoute()
 const errors = ref<Record<string, string[]>>({})
 const loading = ref(false)
 const form = ref({ name: '' })
+const formError = ref<string | null>(null)
 
 onMounted(async () => {
-  const id = Number(route.params.id)
-  const currentCategory = await fetchCategory(id)
-  form.value.name = currentCategory.name
+  loading.value = true
+  try {
+    const id = Number(route.params.id)
+    const currentCategory = await fetchCategory(id)
+    form.value.name = currentCategory.name
+    loading.value = false
+  } catch {
+    formError.value = 'Impossibile caricare i dati del membro.'
+  } finally {
+    loading.value = false
+  }
 })
 
 async function submit(event: Event) {
@@ -42,13 +52,16 @@ async function submit(event: Event) {
     <main class="mx-auto max-w-7xl px-4 py-10">
       <div class="flex items-center justify-between mb-20">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Modifica categoria</h1>
-        <RouterLink
-          to="/admin/categories"
-          class="font-semibold"
-          >Indietro</RouterLink
-        >
+        <RouterLink to="/admin/categories" class="font-semibold">Indietro</RouterLink>
       </div>
-      <form @submit.prevent="submit" class="w-100 border border-slate-400 p-5 bg-white mx-auto">
+
+      <LoaderComponent v-if="loading" />
+
+      <form
+        v-else
+        @submit.prevent="submit"
+        class="w-100 border border-slate-400 p-5 bg-white mx-auto"
+      >
         <label for="name" class="flex flex-col font-semibold space-y-2">
           <span>Nome*</span>
           <input

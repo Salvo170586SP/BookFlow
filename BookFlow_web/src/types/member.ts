@@ -14,6 +14,14 @@ export interface MemberLoan {
   copy: CopyLoan
 }
 
+export interface MemberDetail {
+  phone: string | null
+  address: string | null
+  birth_city: string | null
+  birth_date: string | null
+  photo: string | null
+}
+
 export interface Member {
   id: number
   name: string
@@ -21,6 +29,7 @@ export interface Member {
   created_at: string
   loans_count: number
   loans: MemberLoan[]
+  detail: MemberDetail | null
 }
 
 // Informazioni sulla paginazione, dentro la chiave "meta" della risposta

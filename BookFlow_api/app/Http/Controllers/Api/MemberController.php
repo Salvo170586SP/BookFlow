@@ -9,6 +9,8 @@ use App\Models\Loan;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class MemberController extends Controller
 {
@@ -17,6 +19,7 @@ class MemberController extends Controller
         $members = User::query()
             ->role('member')
             ->withCount('loans')
+            ->with('detail')
             ->orderBy('name')
             ->orderBy('id')
             ->paginate(12);
@@ -26,15 +29,23 @@ class MemberController extends Controller
 
     public function show(User $member): MemberResource
     {
-        return new MemberResource($member->load(['loans.copy.book']));
+        return new MemberResource($member->load(['detail', 'loans.copy.book']));
     }
 
-    public function update(MemberRequest $request,  User $member): MemberResource
+    public function update(MemberRequest $request, User $member): MemberResource
     {
         $data = $request->validated();
-        $member->update($data);
+        $detailData = Arr::except($data, ['name']);
 
-        return new MemberResource($member);
+        DB::transaction(function () use ($member, $data, $detailData): void {
+            $member->update(Arr::only($data, ['name']));
+
+            if ($detailData !== []) {
+                $member->detail()->updateOrCreate([], $detailData);
+            }
+        });
+
+        return new MemberResource($member->load('detail'));
     }
 
     public function destroy(User $member): JsonResponse

@@ -21,6 +21,7 @@ class MemberResource extends JsonResource
             'created_at' => $this->created_at->format('d M Y'),
             'loans_count' => $this->loans_count,
             'loans' => LoanResource::collection($this->whenLoaded('loans')),
+            'detail' => new MemberDetailResource($this->whenLoaded('detail')),
         ];
     }
 }

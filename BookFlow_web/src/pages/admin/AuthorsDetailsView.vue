@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { fetchAuthor } from '../../api/authors'
 import type { Author } from './../../types/author'
+import LoaderComponent from '@/components/LoaderComponent.vue'
 
 const route = useRoute()
 const author = ref<Author | null>(null)
@@ -48,21 +49,13 @@ watch(() => route.params.id, load, { immediate: true })
         <RouterLink to="/admin/authors">Indietro</RouterLink>
       </div>
 
-      <div v-if="loading" class="mt-6 flex flex-col items-center justify-center">
-        <div
-          class="size-8 animate-spin rounded-full border-4 border-solid border-gray-300 border-t-black"
-        ></div>
-        <span class="text-black">Caricamento...</span>
-      </div>
+      <LoaderComponent v-if="loading" />
 
       <p v-else-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ error }}
       </p>
 
-      <section
-        v-else-if="author"
-        class="mt-6 border border-slate-400 bg-white p-6"
-      >
+      <section v-else-if="author" class="mt-6 border border-slate-400 bg-white p-6">
         <h2 class="text-lg font-semibold text-slate-900">{{ author.name }}</h2>
         <p class="mt-3 whitespace-pre-wrap text-sm text-slate-600">
           {{ author.bio || 'Nessuna biografia disponibile.' }}
@@ -73,13 +66,14 @@ watch(() => route.params.id, load, { immediate: true })
         <p class="text-sm text-slate-600">Autore non trovato.</p>
       </section>
 
-      <section
-        v-if="author"
-        class="mt-6 border border-slate-400 bg-white p-6"
-      >
+      <section v-if="author" class="mt-6 border border-slate-400 bg-white p-6">
         <p class="text-lg font-semibold text-slate-900 mb-5">Libri</p>
         <div v-if="author.books.length" class="mt-3 flex flex-wrap space-y-2">
-          <div v-for="(book, index)  in author.books" :key="book.id" class="me-2 text-sm font-semibold text-slate-700">
+          <div
+            v-for="(book, index) in author.books"
+            :key="book.id"
+            class="me-2 text-sm font-semibold text-slate-700"
+          >
             "{{ book.title }}" {{ index < author.books.length - 1 ? ',' : '' }}
           </div>
         </div>

@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('member_details', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('birth_city')->nullable();
-            $table->string('birth_date')->nullable();
+            $table->date('birth_date')->nullable();
             $table->string('photo')->nullable();
             $table->timestamps();
         });

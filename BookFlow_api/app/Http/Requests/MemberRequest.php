@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Foundation\Http\FormRequest;
 
-class MemberRequest extends FormRequest
+class MemberRequest extends MemberDetailRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +21,9 @@ class MemberRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => ['required', 'string', 'max:100'],
-        ];
+        return array_merge(
+            ['name' => ['required', 'string', 'max:100']],
+            parent::rules()
+        );
     }
 }

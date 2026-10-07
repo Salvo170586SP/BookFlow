@@ -4,6 +4,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import type { Author } from '../../types/author'
 import { fetchAuthors } from '../../api/authors'
 import type { PaginationMeta } from '../../types/book'
+import LoaderComponent from '@/components/LoaderComponent.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -66,12 +67,7 @@ watch(page, load, { immediate: true })
         {{ error }}
       </p>
 
-      <div v-if="loading" class="flex flex-col justify-center items-center">
-        <div
-          class="size-8 animate-spin rounded-full border-4 border-solid border-gray-300 border-t-black"
-        ></div>
-        <span class="text-black">Caricamento...</span>
-      </div>
+       <LoaderComponent v-if="loading" />
 
       <section v-else>
         <div

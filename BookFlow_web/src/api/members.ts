@@ -3,33 +3,35 @@ import type { Member } from '@/types/member'
 import type { Paginated } from '@/types/author'
 
 interface UpdatePayload {
-    name: string
+  name: string
+  phone: string
+  address: string
+  birth_city: string
+  birth_date: string
 }
 
 export async function fetchMembers(page = 1): Promise<Paginated<Member>> {
-    const { data } = await http.get<Paginated<Member>>('/members', { params: { page } })
-    return data
+  const { data } = await http.get<Paginated<Member>>('/members', { params: { page } })
+  return data
 }
 
 export async function fetchMember(memberId: number): Promise<Member> {
-    const { data } = await http.get<{ data: Member }>(`/members/${memberId}`)
-    return data.data
+  const { data } = await http.get<{ data: Member }>(`/members/${memberId}`)
+  return data.data
 }
 
-
 export async function updateMember(payload: UpdatePayload, memberId: number) {
-    await getCsrfCookie()
-    await http.put(`/members/${memberId}`, payload)
-    await fetchMembers()
+  await getCsrfCookie()
+  await http.put(`/members/${memberId}`, payload)
 }
 
 export async function destroyMember(memberId: number) {
-    await getCsrfCookie()
-    await http.delete(`/members/${memberId}`)
-    await fetchMembers()
+  await getCsrfCookie()
+  await http.delete(`/members/${memberId}`)
+  await fetchMembers()
 }
 
 export async function destroyMemberLoan(memberId: number, loanId: number): Promise<void> {
-    await getCsrfCookie()
-    await http.delete(`/members/${memberId}/loans/${loanId}`)
+  await getCsrfCookie()
+  await http.delete(`/members/${memberId}/loans/${loanId}`)
 }

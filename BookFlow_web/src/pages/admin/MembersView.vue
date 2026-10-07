@@ -4,6 +4,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import type { Member, PaginationMeta } from '../../types/member'
 import { destroyMember, fetchMember, fetchMembers } from '../../api/members'
 import ConfirmDeleteModal from './../../components/ConfirmDeleteModal.vue'
+import LoaderComponent from '@/components/LoaderComponent.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -105,15 +106,11 @@ watch(page, load, { immediate: true })
         {{ error }}
       </p>
 
-      <div v-if="loading" class="flex flex-col justify-center items-center">
-        <div
-          class="size-8 animate-spin rounded-full border-4 border-solid border-gray-300 border-t-black"
-        ></div>
-        <span class="text-black">Caricamento...</span>
-      </div>
+      <LoaderComponent v-if="loading" />
+      
       <section v-else>
         <div
-          class="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm transition-opacity"
+          class="mt-6 overflow-x-auto border border-slate-400 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
@@ -121,6 +118,9 @@ watch(page, load, { immediate: true })
               <tr>
                 <th class="px-4 py-3 w-80">Nome</th>
                 <th class="px-4 py-3 w-80">Email</th>
+                <th class="px-4 py-3 w-80">telefono</th>
+                <th class="px-4 py-3 w-80">Indirizzo</th>
+                <th class="px-4 py-3 w-80">Città di Nascita</th>
                 <th class="px-4 py-3 w-80">iscritto dal</th>
                 <th class="px-4 py-3 w-80 text-center">Libri in prestito</th>
                 <th class="px-4 py-3 text-end">Azioni</th>
@@ -131,6 +131,15 @@ watch(page, load, { immediate: true })
               <tr v-for="member in members" :key="member.id">
                 <td class="px-4 py-3 font-medium text-slate-900">{{ member.name }}</td>
                 <td class="px-4 py-3 font-medium text-slate-900">{{ member.email }}</td>
+                <td class="px-4 py-3 font-medium text-slate-900">
+                  {{ member.detail?.phone || '-' }}
+                </td>
+                <td class="px-4 py-3 font-medium text-slate-900">
+                  {{ member.detail?.address || '-' }}
+                </td>
+                <td class="px-4 py-3 font-medium text-slate-900">
+                  {{ member.detail?.birth_city || '-' }}
+                </td>
                 <td class="px-4 py-3 font-medium text-slate-900">
                   {{ formatMemberDate(member.created_at) }}
                 </td>

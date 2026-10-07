@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import type { Category, PaginationMeta } from '../../types/category'
 import { fetchCategories, destroyCategories } from '../../api/categories'
+import LoaderComponent from '@/components/LoaderComponent.vue'
  
 const route = useRoute()
 const router = useRouter()
@@ -75,12 +76,8 @@ watch(page, load, { immediate: true })
         {{ error }}
       </p>
 
-      <div v-if="loading" class="flex flex-col justify-center items-center">
-        <div
-          class="size-8 animate-spin rounded-full border-4 border-solid border-gray-300 border-t-black"
-        ></div>
-        <span class="text-black">Caricamento...</span>
-      </div>
+      <LoaderComponent v-if="loading" />
+
       <section v-else>
         <div
           class="mt-6 overflow-x-auto  border border-slate-400 bg-white transition-opacity"
