@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { fetchBooks } from './../../api/books'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { destroyBooks, fetchBooks } from './../../api/books'
 import type { Book, PaginationMeta } from './../../types/book'
 import type { Category } from './../../types/category'
 import { fetchCategoriesOptions } from './../../api/categories'
-import LoaderComponent from '@/components/LoaderComponent.vue'
+import LoaderComponent from './../../components/LoaderComponent.vue'
+import ConfirmDeleteModal from './../../components/ConfirmDeleteModal.vue'
 
 const route = useRoute()
 const router = useRouter()
+
+//conferma modale eliminazione
+const showModal = ref(false) // modale aperta/chiusa
+const bookToDelete = ref<Book | null>(null) // quale elemento sto per eliminare
+const deleting = ref(false) // richiesta in corso
 
 const books = ref<Book[]>([])
 const categories = ref<Category[]>([])
@@ -84,6 +90,28 @@ function filterByCategory(event: Event) {
   })
 }
 
+function askDelete(book: Book) {
+  bookToDelete.value = book
+  showModal.value = true
+}
+
+async function deleteBook() {
+  if (!bookToDelete.value) return
+
+  deleting.value = true
+
+  try {
+    await destroyBooks(bookToDelete.value.id)
+    await load()
+    showModal.value = false
+    bookToDelete.value = null
+  } catch (e) {
+    console.error(e)
+  } finally {
+    deleting.value = false
+  }
+}
+
 // L'URL conserva i filtri e la pagina, quindi funzionano refresh e tasto "indietro"
 watch([page, categoryId], load, { immediate: true })
 loadCategories()
@@ -126,6 +154,8 @@ loadCategories()
                 <th class="px-4 py-3">Categoria</th>
                 <th class="px-4 py-3">Editore</th>
                 <th class="px-4 py-3">Anno</th>
+                <th class="px-4 py-3 text-center">Copie disponibili</th>
+                <th class="px-4 py-3 text-end">Azioni</th>
               </tr>
             </thead>
 
@@ -138,16 +168,45 @@ loadCategories()
                 <td class="px-4 py-3 text-slate-600">{{ book.category.name }}</td>
                 <td class="px-4 py-3 text-slate-600">{{ book.publisher?.name ?? '—' }}</td>
                 <td class="px-4 py-3 text-slate-600">{{ book.published_year ?? '—' }}</td>
+                <td class="px-4 py-3 text-center text-slate-600">
+                  {{ book.available_copies_count }}
+                </td>
+                <td class="px-4 py-3 text-slate-600">
+                  <div class="flex items-center gap-2">
+                    <RouterLink
+                      :to="`/admin/books/${book.id}/addCopies`"
+                      class="border font-semibold w-32 text-center py-1 bg-gray-50 hover:bg-gray-200 text-black"
+                      >Aggiungi copie</RouterLink
+                    >
+                    <RouterLink
+                      :to="`/admin/books/${book.id}/addLoan`"
+                      class="border font-semibold px-3 py-1 bg-gray-50 hover:bg-gray-200 text-black"
+                      >Presta</RouterLink
+                    >
+                    <button
+                      @click="askDelete(book)"
+                      class="bg-red-500 hover:bg-red-600 text-white cursor-pointer px-3 py-1 border border-black"
+                    >
+                      Elimina
+                    </button>
+                  </div>
+                </td>
               </tr>
 
               <tr v-if="!loading && books.length === 0">
-                <td colspan="5" class="px-4 py-8 text-center text-slate-500">
+                <td colspan="7" class="px-4 py-8 text-center text-slate-500">
                   Nessun libro trovato.
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        <ConfirmDeleteModal v-model="showModal" :loading="deleting" @confirm="deleteBook">
+          Vuoi davvero eliminare
+          <strong class="capitalize">{{ bookToDelete?.title }}</strong
+          >?
+        </ConfirmDeleteModal>
 
         <div v-if="meta" class="mt-4 flex items-center justify-between text-sm text-slate-600">
           <p>Pagina {{ meta.current_page }} di {{ meta.last_page }} · {{ meta.total }} libri</p>

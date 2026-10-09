@@ -35,3 +35,11 @@ export async function destroyMemberLoan(memberId: number, loanId: number): Promi
   await getCsrfCookie()
   await http.delete(`/members/${memberId}/loans/${loanId}`)
 }
+
+export async function createMemberLoan(
+  memberId: number,
+  payload: { copy_id: number; due_at: string },
+): Promise<void> {
+  await getCsrfCookie()
+  await http.post(`/members/${memberId}/loans`, payload)
+}

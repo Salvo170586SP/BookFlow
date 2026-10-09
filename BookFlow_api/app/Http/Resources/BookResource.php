@@ -19,6 +19,10 @@ class BookResource extends JsonResource
             'title'          => $this->title,
             'isbn'           => $this->isbn,
             'published_year' => $this->published_year,
+            'available_copies_count' => $this->when(
+                isset($this->available_copies_count),
+                (int) ($this->available_copies_count ?? 0)
+            ),
             // whenLoaded: la chiave compare solo se la relazione è stata caricata con with()
             'publisher'      => $this->whenLoaded('publisher', fn() => $this->publisher?->only(['id', 'name'])),
             'category'       => $this->whenLoaded('category', fn() => $this->category->only(['id', 'name'])),

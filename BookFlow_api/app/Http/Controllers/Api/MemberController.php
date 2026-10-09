@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MemberRequest;
+use App\Http\Resources\LoanResource;
 use App\Http\Resources\MemberResource;
+use App\Models\Copy;
 use App\Models\Loan;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class MemberController extends Controller
 {
@@ -64,5 +68,36 @@ class MemberController extends Controller
         return response()->json([
             'message' => 'Prestito eliminato con successo.',
         ]);
+    }
+
+    public function addLoan(Request $request, User $member): LoanResource
+    {
+        abort_unless($request->user()?->hasRole('admin'), 403);
+        abort_unless($member->hasRole('member'), 404);
+
+        $data = $request->validate([
+            'copy_id' => ['required', 'integer', 'exists:copies,id'],
+            'due_at' => ['required', 'date', 'after:now'],
+        ]);
+
+        $loan = DB::transaction(function () use ($member, $data): Loan {
+            $copy = Copy::query()
+                ->lockForUpdate()
+                ->findOrFail($data['copy_id']);
+
+            if ($copy->status !== 'available' || $copy->activeLoan()->exists()) {
+                throw ValidationException::withMessages([
+                    'copy_id' => 'La copia selezionata non è disponibile per il prestito.',
+                ]);
+            }
+
+            return $member->loans()->create([
+                'copy_id' => $copy->id,
+                'loaned_at' => now(),
+                'due_at' => $data['due_at'],
+            ]);
+        });
+
+        return new LoanResource($loan->load('copy.book'));
     }
 }

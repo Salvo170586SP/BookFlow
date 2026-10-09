@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AuthorController;
 use App\Http\Controllers\Api\BookController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CopyController;
 use App\Http\Controllers\Api\MemberController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
 
     Route::get('/books', [BookController::class, 'index']);
+    Route::get('/books/{book}', [BookController::class, 'show']);
+    Route::get('/books/{book}/copies/available', [BookController::class, 'availableCopies']);
+    // La richiesta deve essere autenticata; BookController verifica anche il ruolo admin.
+    Route::post('/books/{book}/addCopy', [BookController::class, 'addCopy']);
+    Route::delete('/books/{book}', [BookController::class, 'destroy']);
+
     Route::get('/authors', [AuthorController::class, 'index']);
     Route::get('/authors/{author}', [AuthorController::class, 'show']);
 
@@ -33,9 +40,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/categories/{category}', [CategoryController::class, 'update']);
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
 
+
     Route::get('/members', [MemberController::class, 'index']);
     Route::get('/members/{member}', [MemberController::class, 'show']);
     Route::put('/members/{member}', [MemberController::class, 'update']);
     Route::delete('/members/{member}', [MemberController::class, 'destroy']);
+    Route::post('/members/{member}/loans', [MemberController::class, 'addLoan']);
     Route::delete('/members/{member}/loans/{loan}', [MemberController::class, 'destroyLoan']);
 });

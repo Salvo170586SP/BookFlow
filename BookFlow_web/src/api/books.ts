@@ -1,5 +1,5 @@
-import http from '@/api/http'
-import type { Book, Paginated } from '@/types/book'
+import http, { getCsrfCookie } from '@/api/http'
+import type { Book, BookCopy, Paginated } from '@/types/book'
 
 export async function fetchBooks(page = 1, categoryId?: number): Promise<Paginated<Book>> {
   const { data } = await http.get<Paginated<Book>>('/books', {
@@ -11,4 +11,31 @@ export async function fetchBooks(page = 1, categoryId?: number): Promise<Paginat
 export async function fetchBook(bookId: number): Promise<Book> {
   const { data } = await http.get<{ data: Book }>(`/books/${bookId}`)
   return data.data
+}
+
+export async function fetchAvailableCopies(bookId: number): Promise<BookCopy[]> {
+  const { data } = await http.get<{ data: BookCopy[] }>(`/books/${bookId}/copies/available`)
+  return data.data
+}
+
+export async function destroyBooks(bookId: number) {
+    await getCsrfCookie()
+    await http.delete(`/books/${bookId}`)
+    await fetchBooks()
+}
+
+interface StoreCopiesPayload {
+  quantity: number
+}
+
+export async function storeBookCopies(
+  bookId: number,
+  payload: StoreCopiesPayload,
+): Promise<number> {
+  await getCsrfCookie()
+  const { data } = await http.post<{ created_count: number }>(
+    `/books/${bookId}/addCopy`,
+    payload,
+  )
+  return data.created_count
 }

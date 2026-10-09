@@ -4,6 +4,12 @@ export interface Named {
   name: string
 }
 
+export interface BookCopy {
+  id: number
+  barcode: string
+  status: string
+}
+
 export interface Book {
   id: number
   title: string
@@ -12,6 +18,8 @@ export interface Book {
   publisher: Named | null
   category: Named
   authors: Named[]
+  copies?: BookCopy[]
+  available_copies_count: number
 }
 
 // Informazioni sulla paginazione, dentro la chiave "meta" della risposta

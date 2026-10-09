@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import type { Member, PaginationMeta } from '../../types/member'
-import { destroyMember, fetchMember, fetchMembers } from '../../api/members'
+import { destroyMember, fetchMembers } from '../../api/members'
 import ConfirmDeleteModal from './../../components/ConfirmDeleteModal.vue'
 import LoaderComponent from '@/components/LoaderComponent.vue'
 
@@ -11,7 +11,7 @@ const router = useRouter()
 
 //conferma modale eliminazione
 const showModal = ref(false) // modale aperta/chiusa
-const memberToDelete = ref('') // quale elemento sto per eliminare
+const memberToDelete = ref<Member | null>(null) // quale elemento sto per eliminare
 const deleting = ref(false) // richiesta in corso
 
 const members = ref<Member[]>([])
@@ -67,18 +67,21 @@ function formatMemberDate(date: string): string {
   }).format(new Date(date))
 }
 
-function askDelete(member: any) {
-  memberToDelete.value = member.name
+function askDelete(member: Member) {
+  memberToDelete.value = member
   showModal.value = true
 }
 
-async function deleteMember(memberId: any) {
+async function deleteMember() {
+  if (!memberToDelete.value) return
+
   deleting.value = true
 
   try {
-    await destroyMember(memberId)
-    load()
+    await destroyMember(memberToDelete.value.id)
+    await load()
     showModal.value = false // chiudo SOLO se è andata bene
+    memberToDelete.value = null
   } catch (e) {
     console.error(e) // qui potresti mostrare un messaggio di errore
   } finally {
@@ -170,14 +173,6 @@ watch(page, load, { immediate: true })
                     >
                       Elimina
                     </button>
-                    <ConfirmDeleteModal
-                      v-model="showModal"
-                      :loading="deleting"
-                      @confirm="deleteMember(member.id)"
-                    >
-                      Vuoi davvero eliminare <strong class="capitalize">{{ memberToDelete }}</strong
-                      >?
-                    </ConfirmDeleteModal>
                   </div>
                 </td>
               </tr>
@@ -190,6 +185,13 @@ watch(page, load, { immediate: true })
             </tbody>
           </table>
         </div>
+
+        <ConfirmDeleteModal v-model="showModal" :loading="deleting" @confirm="deleteMember">
+          Vuoi davvero eliminare
+          <strong class="capitalize">{{ memberToDelete?.name }}</strong
+          >?
+        </ConfirmDeleteModal>
+
         <div v-if="meta" class="mt-4 flex items-center justify-between text-sm text-slate-600">
           <p>Pagina {{ meta.current_page }} di {{ meta.last_page }} · {{ meta.total }} categorie</p>
 
