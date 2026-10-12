@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isAxiosError } from 'axios'
 import { ref, computed, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { destroyBooks, fetchBooks } from './../../api/books'
@@ -15,12 +16,14 @@ const router = useRouter()
 const showModal = ref(false) // modale aperta/chiusa
 const bookToDelete = ref<Book | null>(null) // quale elemento sto per eliminare
 const deleting = ref(false) // richiesta in corso
+const deleteError = ref<string | null>(null)
 
 const books = ref<Book[]>([])
 const categories = ref<Category[]>([])
 const meta = ref<PaginationMeta | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
+const searchTitle = ref('')
 
 async function loadCategories() {
   try {
@@ -90,8 +93,15 @@ function filterByCategory(event: Event) {
   })
 }
 
+const filteredBooks = computed(() => {
+  const term = searchTitle.value.trim().toLowerCase()
+  if (!term) return books.value
+  return books.value.filter((book) => book.title.toLowerCase().includes(term))
+})
+
 function askDelete(book: Book) {
   bookToDelete.value = book
+  deleteError.value = null
   showModal.value = true
 }
 
@@ -107,6 +117,9 @@ async function deleteBook() {
     bookToDelete.value = null
   } catch (e) {
     console.error(e)
+    deleteError.value = isAxiosError<{ message?: string }>(e)
+      ? e.response?.data?.message ?? 'Impossibile eliminare il libro. Riprova.'
+      : 'Impossibile eliminare il libro. Riprova.'
   } finally {
     deleting.value = false
   }
@@ -125,18 +138,35 @@ loadCategories()
       <LoaderComponent v-if="loading && books.length === 0" />
 
       <section v-else>
-        <select
-          id="categories"
-          name="category"
-          class="w-100 border bg-white"
-          :value="categoryId ?? ''"
-          @change="filterByCategory"
-        >
-          <option value="">-Seleziona-</option>
-          <option v-for="category in categories" :key="category.id" :value="category.id">
-            {{ category.name }}
-          </option>
-        </select>
+        <div class="space-x-5 flex items-center">
+          <label for="byTitle" class="flex flex-col">
+            Cerca per titolo
+            <input
+              type="text"
+              class="border bg-white px-2"
+              v-model="searchTitle"
+              id="byTitle"
+              placeholder="cerca per titlo..."
+            />
+          </label>
+
+          <label for="" class="flex flex-col">
+            Cerca per categoria
+            <select
+              id="categories"
+              name="category"
+              class="w-50 border bg-white"
+              :value="categoryId ?? ''"
+              @change="filterByCategory"
+            >
+              <option value="">-Seleziona-</option>
+              <option v-for="category in categories" :key="category.id" :value="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </label>
+
+        </div>
 
         <p v-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
           {{ error }}
@@ -150,26 +180,46 @@ loadCategories()
             <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <tr>
                 <th class="px-4 py-3">Titolo</th>
-                <th class="px-4 py-3">Autori</th>
+                <th class="px-4 py-3 w-100">Autori</th>
                 <th class="px-4 py-3">Categoria</th>
-                <th class="px-4 py-3">Editore</th>
+                <th class="px-4 py-3 w-100">Editore</th>
                 <th class="px-4 py-3">Anno</th>
-                <th class="px-4 py-3 text-center">Copie disponibili</th>
+                <th class="px-4 py-3 text-center">Copie totali</th>
+                <th class="px-4 py-3 text-center">Copie prestate</th>
+                <th class="px-4 py-3 text-center">Copie rimanenti</th>
                 <th class="px-4 py-3 text-end">Azioni</th>
               </tr>
             </thead>
 
             <tbody class="divide-y divide-slate-100">
-              <tr v-for="book in books" :key="book.id">
+              <tr v-for="book in filteredBooks" :key="book.id">
                 <td class="px-4 py-3 font-medium text-slate-900">{{ book.title }}</td>
-                <td class="px-4 py-3 text-slate-600">
+                <td class="px-4 py-3 text-slate-600 text-xs">
                   {{ book.authors.map((a) => a.name).join(', ') }}
                 </td>
                 <td class="px-4 py-3 text-slate-600">{{ book.category.name }}</td>
-                <td class="px-4 py-3 text-slate-600">{{ book.publisher?.name ?? '—' }}</td>
+                <td class="px-4 py-3 text-slate-600 text-xs">{{ book.publisher?.name ?? '—' }}</td>
                 <td class="px-4 py-3 text-slate-600">{{ book.published_year ?? '—' }}</td>
                 <td class="px-4 py-3 text-center text-slate-600">
-                  {{ book.available_copies_count }}
+                  <span
+                    class="inline-flex w-6 h-6 bg-gray-200 items-center justify-center rounded-lg font-bold"
+                  >
+                    {{ book.total_copies_count }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-center text-slate-600">
+                  <span
+                    class="inline-flex w-6 h-6 bg-gray-200 items-center justify-center rounded-lg font-bold"
+                  >
+                    {{ book.borrowed_copies_count }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-center text-slate-600">
+                  <span
+                    class="inline-flex w-6 h-6 bg-gray-200 items-center justify-center rounded-lg font-bold"
+                  >
+                    {{ book.remaining_copies_count }}
+                  </span>
                 </td>
                 <td class="px-4 py-3 text-slate-600">
                   <div class="flex items-center gap-2">
@@ -177,6 +227,11 @@ loadCategories()
                       :to="`/admin/books/${book.id}/addCopies`"
                       class="border font-semibold w-32 text-center py-1 bg-gray-50 hover:bg-gray-200 text-black"
                       >Aggiungi copie</RouterLink
+                    >
+                    <RouterLink
+                      :to="`/admin/books/${book.id}/editCopies`"
+                      class="border font-semibold w-32 text-center py-1 bg-gray-50 hover:bg-gray-200 text-black"
+                      >Modifica copie</RouterLink
                     >
                     <RouterLink
                       :to="`/admin/books/${book.id}/addLoan`"
@@ -194,7 +249,7 @@ loadCategories()
               </tr>
 
               <tr v-if="!loading && books.length === 0">
-                <td colspan="7" class="px-4 py-8 text-center text-slate-500">
+                <td colspan="9" class="px-4 py-8 text-center text-slate-500">
                   Nessun libro trovato.
                 </td>
               </tr>
@@ -206,6 +261,9 @@ loadCategories()
           Vuoi davvero eliminare
           <strong class="capitalize">{{ bookToDelete?.title }}</strong
           >?
+          <p v-if="deleteError" class="mt-3 text-sm text-red-700" role="alert">
+            {{ deleteError }}
+          </p>
         </ConfirmDeleteModal>
 
         <div v-if="meta" class="mt-4 flex items-center justify-between text-sm text-slate-600">

@@ -13,7 +13,6 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-
 // Rotte pubbliche
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -26,6 +25,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/books', [BookController::class, 'index']);
     Route::get('/books/{book}', [BookController::class, 'show']);
     Route::get('/books/{book}/copies/available', [BookController::class, 'availableCopies']);
+    Route::get('/books/{book}/copies', [CopyController::class, 'index']);
+    Route::put('/books/{book}/copies/{copy}', [CopyController::class, 'update']);
+    Route::delete('/books/{book}/copies/{copy}', [CopyController::class, 'destroy']);
     // La richiesta deve essere autenticata; BookController verifica anche il ruolo admin.
     Route::post('/books/{book}/addCopy', [BookController::class, 'addCopy']);
     Route::delete('/books/{book}', [BookController::class, 'destroy']);
@@ -39,7 +41,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::put('/categories/{category}', [CategoryController::class, 'update']);
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
-
 
     Route::get('/members', [MemberController::class, 'index']);
     Route::get('/members/{member}', [MemberController::class, 'show']);

@@ -7,8 +7,10 @@ export interface Named {
 export interface BookCopy {
   id: number
   barcode: string
-  status: string
+  status: CopyStatus
 }
+
+export type CopyStatus = 'available' | 'damaged' | 'lost' | 'maintenance'
 
 export interface Book {
   id: number
@@ -19,6 +21,9 @@ export interface Book {
   category: Named
   authors: Named[]
   copies?: BookCopy[]
+  total_copies_count: number
+  borrowed_copies_count: number
+  remaining_copies_count: number
   available_copies_count: number
 }
 

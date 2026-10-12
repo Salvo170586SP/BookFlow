@@ -1,5 +1,5 @@
 import http, { getCsrfCookie } from '@/api/http'
-import type { Book, BookCopy, Paginated } from '@/types/book'
+import type { Book, BookCopy, CopyStatus, Paginated } from '@/types/book'
 
 export async function fetchBooks(page = 1, categoryId?: number): Promise<Paginated<Book>> {
   const { data } = await http.get<Paginated<Book>>('/books', {
@@ -18,10 +18,32 @@ export async function fetchAvailableCopies(bookId: number): Promise<BookCopy[]> 
   return data.data
 }
 
+export async function fetchBookCopies(bookId: number): Promise<BookCopy[]> {
+  const { data } = await http.get<{ data: BookCopy[] }>(`/books/${bookId}/copies`)
+  return data.data
+}
+
+export async function updateBookCopyStatus(
+  bookId: number,
+  copyId: number,
+  status: CopyStatus,
+): Promise<BookCopy> {
+  await getCsrfCookie()
+  const { data } = await http.put<{ data: BookCopy }>(`/books/${bookId}/copies/${copyId}`, {
+    status,
+  })
+  return data.data
+}
+
+export async function destroyBookCopy(bookId: number, copyId: number): Promise<void> {
+  await getCsrfCookie()
+  await http.delete(`/books/${bookId}/copies/${copyId}`)
+}
+
 export async function destroyBooks(bookId: number) {
-    await getCsrfCookie()
-    await http.delete(`/books/${bookId}`)
-    await fetchBooks()
+  await getCsrfCookie()
+  await http.delete(`/books/${bookId}`)
+  await fetchBooks()
 }
 
 interface StoreCopiesPayload {

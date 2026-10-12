@@ -24,11 +24,7 @@ class BookController extends Controller
         $books = Book::query()
             // Carichiamo in anticipo le relazioni, e solo le colonne che servono
             ->with(['publisher:id,name', 'category:id,name', 'authors:id,name'])
-            ->withCount([
-                'copies as available_copies_count' => fn(Builder $query) => $query
-                    ->where('status', 'available')
-                    ->whereDoesntHave('loans', fn(Builder $loanQuery) => $loanQuery->whereNull('returned_at')),
-            ])
+            ->withCount($this->copyCountDefinitions())
             ->when($filters['search'] ?? null, function (Builder $query, string $search) {
                 $term = '%' . addcslashes($search, '%_\\') . '%';
                 $query->where(function (Builder $q) use ($term) {
@@ -51,11 +47,7 @@ class BookController extends Controller
     {
         return new BookResource(
             $book->load(['publisher:id,name', 'category:id,name', 'authors:id,name'])
-                ->loadCount([
-                    'copies as available_copies_count' => fn(Builder $query) => $query
-                        ->where('status', 'available')
-                        ->whereDoesntHave('loans', fn(Builder $loanQuery) => $loanQuery->whereNull('returned_at')),
-                ])
+                ->loadCount($this->copyCountDefinitions())
         );
     }
 
@@ -87,17 +79,40 @@ class BookController extends Controller
 
     public function destroy(Book $book): JsonResponse|Response
     {
-        if ($book->copies()->where('status', '!=', 'available')->exists()) {
-            return response()->json([
-                'message' => 'Impossibile eliminare il libro: ci sono copie in prestito o non disponibili.',
-            ], 409);
-        }
+        $conflict = DB::transaction(function () use ($book): ?string {
+            $copies = $book->copies()->lockForUpdate()->get();
 
-        DB::transaction(function () use ($book) {
+            if ($copies->contains(fn ($copy) => $copy->status !== 'available')) {
+                return 'Impossibile eliminare il libro: ci sono copie in prestito o non disponibili.';
+            }
+
+            if ($book->copies()->whereHas('loans')->exists()) {
+                return 'Impossibile eliminare il libro: una o più copie sono collegate a prestiti.';
+            }
+
             $book->copies()->delete();
             $book->delete();
+
+            return null;
         });
 
+        if ($conflict !== null) {
+            return response()->json(['message' => $conflict], 409);
+        }
+
         return response()->noContent();
+    }
+
+    /** @return array<int|string, \Closure|string> */
+    private function copyCountDefinitions(): array
+    {
+        return [
+            'copies as total_copies_count',
+            'copies as borrowed_copies_count' => fn (Builder $query) => $query
+                ->whereHas('loans', fn (Builder $loanQuery) => $loanQuery->whereNull('returned_at')),
+            'copies as available_copies_count' => fn (Builder $query) => $query
+                ->where('status', 'available')
+                ->whereDoesntHave('loans', fn (Builder $loanQuery) => $loanQuery->whereNull('returned_at')),
+        ];
     }
 }

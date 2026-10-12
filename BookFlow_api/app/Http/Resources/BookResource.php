@@ -15,18 +15,30 @@ class BookResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'             => $this->id,
-            'title'          => $this->title,
-            'isbn'           => $this->isbn,
+            'id' => $this->id,
+            'title' => $this->title,
+            'isbn' => $this->isbn,
             'published_year' => $this->published_year,
+            'total_copies_count' => $this->when(
+                isset($this->total_copies_count),
+                (int) ($this->total_copies_count ?? 0)
+            ),
+            'borrowed_copies_count' => $this->when(
+                isset($this->borrowed_copies_count),
+                (int) ($this->borrowed_copies_count ?? 0)
+            ),
+            'remaining_copies_count' => $this->when(
+                isset($this->total_copies_count) && isset($this->borrowed_copies_count),
+                max(0, (int) $this->total_copies_count - (int) $this->borrowed_copies_count)
+            ),
             'available_copies_count' => $this->when(
                 isset($this->available_copies_count),
                 (int) ($this->available_copies_count ?? 0)
             ),
             // whenLoaded: la chiave compare solo se la relazione è stata caricata con with()
-            'publisher'      => $this->whenLoaded('publisher', fn() => $this->publisher?->only(['id', 'name'])),
-            'category'       => $this->whenLoaded('category', fn() => $this->category->only(['id', 'name'])),
-            'authors'        => $this->whenLoaded('authors', fn() => $this->authors->map->only(['id', 'name'])->values()),
+            'publisher' => $this->whenLoaded('publisher', fn () => $this->publisher?->only(['id', 'name'])),
+            'category' => $this->whenLoaded('category', fn () => $this->category->only(['id', 'name'])),
+            'authors' => $this->whenLoaded('authors', fn () => $this->authors->map->only(['id', 'name'])->values()),
         ];
     }
 }

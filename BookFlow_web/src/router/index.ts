@@ -18,6 +18,7 @@ import MemberDetailsView from '@/pages/admin/MemberDetailsView.vue'
 import MemberEditView from '@/pages/admin/MemberEditView.vue'
 import BooksLoanView from '@/pages/admin/BooksLoanView.vue'
 import BooksAddCopiesView from '@/pages/admin/BooksAddCopiesView.vue'
+import BooksEditCopiesView from '@/pages/admin/BooksEditCopiesView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -52,6 +53,7 @@ const router = createRouter({
         { path: 'books', name: 'AdminBooks', component: BooksView },
         { path: 'books/:id/addLoan', name: 'AdminBooksLoan', component: BooksLoanView },
         { path: 'books/:id/addCopies', name: 'AdminBooksAddCopies', component: BooksAddCopiesView },
+        { path: 'books/:id/editCopies', name: 'AdminBooksEditCopies', component: BooksEditCopiesView },
         { path: 'authors', name: 'AdminAuthors', component: AuthorsView },
         { path: 'authors/:id/details', name: 'AdminAuthorsDetails', component: AuthorsDetailsView },
         { path: 'categories', name: 'AdminCategories', component: CategoriesView },

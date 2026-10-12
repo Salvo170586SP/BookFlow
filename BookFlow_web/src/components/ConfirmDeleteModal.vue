@@ -19,7 +19,7 @@ const open = defineModel({ type: Boolean, default: false })
 // 3. EMITS: gli eventi che il componente "lancia" al genitore
 const emit = defineEmits(['confirm', 'cancel'])
 
-const cancelBtn = ref(null)
+const cancelBtn = ref<HTMLButtonElement | null>(null)
 
 function close() {
   if (props.loading) return // durante la richiesta non si può chiudere
@@ -27,7 +27,7 @@ function close() {
   emit('cancel')
 }
 
-function onKeydown(e) {
+function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') close()
 }
 
