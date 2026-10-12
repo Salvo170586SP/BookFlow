@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { fetchBook, storeBookCopies } from './../../api/books'
-import type { Book } from './../../types/book'
+import { fetchBook, storeBookCopies } from '../../../api/books'
+import type { Book } from '../../../types/book'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 

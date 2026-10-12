@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'name'  => $this->name,
             'email' => $this->email,
             'roles' => $this->whenLoaded('roles', fn() => $this->roles->pluck('name')),
+            'detail' => $this->whenLoaded('detail', fn () => new MemberDetailResource($this->detail)),
         ];
     }
 }

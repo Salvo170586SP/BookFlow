@@ -1,7 +1,32 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { fetchBooks } from '../../api/books'
 import { useAuthStore } from '../../stores/auth'
+import { RouterLink } from 'vue-router'
+import { fetchMembers } from '@/api/members'
 
 const auth = useAuthStore()
+const totalBooks = ref<number | null>(null)
+const booksError = ref<string | null>(null)
+
+const totalMembers = ref<number | null>(null)
+const membersError = ref<string | null>(null)
+
+onMounted(async () => {
+  try {
+    const books = await fetchBooks()
+    totalBooks.value = books.meta.total
+  } catch {
+    booksError.value = 'Impossibile caricare il totale dei libri.'
+  }
+
+  try {
+    const members = await fetchMembers()
+    totalMembers.value = members.meta.total
+  } catch {
+    membersError.value = 'Impossibile caricare il totale dei membri.'
+  }
+})
 </script>
 
 <template>
@@ -14,14 +39,49 @@ const auth = useAuthStore()
       <p class="mt-1 text-slate-600">Ecco il riepilogo del tuo account.</p>
 
       <div v-if="auth.user" class="mt-8 grid gap-6 sm:grid-cols-2">
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p class="text-sm font-medium text-slate-500">Nome</p>
-          <p class="mt-1 text-lg font-semibold text-slate-900">{{ auth.user.name }}</p>
+        <div class="border border-slate-400 bg-white p-6 space-y-3">
+          <div>
+            <p class="text-sm font-medium text-slate-500">Nome</p>
+            <p class="mt-1 text-lg font-semibold text-slate-900">{{ auth.user.name }}</p>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-slate-500">Email</p>
+            <p class="mt-1 text-lg font-semibold text-slate-900">{{ auth.user.email }}</p>
+          </div>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <p class="text-sm font-medium text-slate-500">Email</p>
-          <p class="mt-1 text-lg font-semibold text-slate-900">{{ auth.user.email }}</p>
+        <div class="border border-slate-400 bg-white p-6">
+          <div>
+            <p class="text-lg font-medium text-slate-500">Catalogo</p>
+            <p class="my-1 text-lg font-semibold text-slate-900 mb-5">
+              Tot. libri in catalogo:
+              <span v-if="totalBooks !== null">{{ totalBooks }}</span>
+              <span v-else-if="booksError" class="text-sm font-medium text-red-600">
+                {{ booksError }}
+              </span>
+              <span v-else aria-label="Caricamento">…</span>
+            </p>
+            <RouterLink to="/admin/books" class="border px-3 py-1 font-semibold hover:bg-gray-200"
+              >Accedi al catalogo</RouterLink
+            >
+          </div>
+        </div>
+
+        <div class="border border-slate-400 bg-white p-6">
+          <div>
+            <p class="text-lg font-medium text-slate-500">Membri registrati</p>
+            <p class="my-1 text-lg font-semibold text-slate-900 mb-5">
+              Tot. membri registrati:
+              <span v-if="totalMembers !== null">{{ totalMembers }}</span>
+              <span v-else-if="membersError" class="text-sm font-medium text-red-600">
+                {{ membersError }}
+              </span>
+              <span v-else aria-label="Caricamento">…</span>
+            </p>
+            <RouterLink to="/admin/members" class="border px-3 py-1 font-semibold hover:bg-gray-200"
+              >Accedi ai membri</RouterLink
+            >
+          </div>
         </div>
       </div>
     </div>

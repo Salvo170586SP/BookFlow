@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import type { Member, PaginationMeta } from '../../types/member'
-import { destroyMember, fetchMembers } from '../../api/members'
-import ConfirmDeleteModal from './../../components/ConfirmDeleteModal.vue'
+import type { Member, PaginationMeta } from './../../../types/member'
+import { destroyMember, fetchMembers } from './../../../api/members'
+import ConfirmDeleteModal from '../../../components/ConfirmDeleteModal.vue'
 import LoaderComponent from '@/components/LoaderComponent.vue'
+import PaginationComponent from '@/components/PaginationComponent.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -109,11 +110,14 @@ watch(page, load, { immediate: true })
         {{ error }}
       </p>
 
-      <LoaderComponent v-if="loading" />
-      
+      <LoaderComponent v-if="loading && members.length === 0" />
+
       <section v-else>
+
+        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
+
         <div
-          class="mt-6 overflow-x-auto border border-slate-400 bg-white transition-opacity"
+          class="mt-3 overflow-x-auto border border-slate-400 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
@@ -157,19 +161,19 @@ watch(page, load, { immediate: true })
                   <div class="text-end space-x-1 flex">
                     <RouterLink
                       :to="`/admin/members/${member.id}/details`"
-                      class="bg-gray-500 hover:bg-gray-600 text-white cursor-pointer px-3 py-1 border border-black"
+                      class="hover:bg-gray-200 text-gray-700 cursor-pointer px-4 py-1 border border-gray-400 font-medium"
                     >
                       Dettagli
                     </RouterLink>
                     <RouterLink
                       :to="`/admin/members/${member.id}/edit`"
-                      class="bg-blue-500 hover:bg-blue-600 text-white cursor-pointer px-3 py-1 border border-black"
+                       class="hover:bg-gray-200 text-blue-700 cursor-pointer px-4 py-1 border border-blue-400 font-medium"
                     >
                       Modifica
                     </RouterLink>
                     <button
                       @click="askDelete(member)"
-                      class="bg-red-500 hover:bg-red-600 text-white cursor-pointer px-3 py-1 border border-black"
+                       class="hover:bg-gray-200 text-red-700 cursor-pointer px-4 py-1 border border-red-400 font-medium"
                     >
                       Elimina
                     </button>
@@ -192,26 +196,7 @@ watch(page, load, { immediate: true })
           >?
         </ConfirmDeleteModal>
 
-        <div v-if="meta" class="mt-4 flex items-center justify-between text-sm text-slate-600">
-          <p>Pagina {{ meta.current_page }} di {{ meta.last_page }} · {{ meta.total }} categorie</p>
-
-          <div class="flex gap-2">
-            <button
-              :disabled="meta.current_page <= 1 || loading"
-              class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-              @click="goToPage(meta.current_page - 1)"
-            >
-              Precedente
-            </button>
-            <button
-              :disabled="meta.current_page >= meta.last_page || loading"
-              class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-              @click="goToPage(meta.current_page + 1)"
-            >
-              Successiva
-            </button>
-          </div>
-        </div>
+        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
       </section>
     </main>
   </div>

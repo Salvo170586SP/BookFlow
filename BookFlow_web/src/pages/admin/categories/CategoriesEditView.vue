@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
-import { fetchCategory, updateCategories } from './../../api/categories'
+import { fetchCategory, updateCategories } from './../../../api/categories'
 import LoaderComponent from '@/components/LoaderComponent.vue'
 
 const router = useRouter()

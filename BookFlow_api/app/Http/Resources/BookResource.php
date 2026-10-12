@@ -19,6 +19,16 @@ class BookResource extends JsonResource
             'title' => $this->title,
             'isbn' => $this->isbn,
             'published_year' => $this->published_year,
+            'copies' => $this->whenLoaded('copies', fn () => $this->copies->map(function ($copy) {
+                return [
+                    'id' => $copy->id,
+                    'barcode' => $copy->barcode,
+                    'status' => $copy->status,
+                    'loans' => $copy->relationLoaded('loans')
+                        ? LoanResource::collection($copy->loans)
+                        : [],
+                ];
+            })->values()),
             'total_copies_count' => $this->when(
                 isset($this->total_copies_count),
                 (int) ($this->total_copies_count ?? 0)

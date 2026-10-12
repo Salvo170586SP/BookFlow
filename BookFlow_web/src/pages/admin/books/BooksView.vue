@@ -2,12 +2,13 @@
 import { isAxiosError } from 'axios'
 import { ref, computed, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { destroyBooks, fetchBooks } from './../../api/books'
-import type { Book, PaginationMeta } from './../../types/book'
-import type { Category } from './../../types/category'
-import { fetchCategoriesOptions } from './../../api/categories'
-import LoaderComponent from './../../components/LoaderComponent.vue'
-import ConfirmDeleteModal from './../../components/ConfirmDeleteModal.vue'
+import { destroyBooks, fetchBooks } from '../../../api/books'
+import type { Book, PaginationMeta } from '../../../types/book'
+import type { Category } from '../../../types/category'
+import { fetchCategoriesOptions } from '../../../api/categories'
+import LoaderComponent from '../../../components/LoaderComponent.vue'
+import ConfirmDeleteModal from '../../../components/ConfirmDeleteModal.vue'
+import PaginationComponent from '@/components/PaginationComponent.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -165,15 +166,16 @@ loadCategories()
               </option>
             </select>
           </label>
-
         </div>
 
         <p v-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
           {{ error }}
         </p>
 
+        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
+        
         <div
-          class="mt-6 overflow-x-auto border border-slate-400 bg-white transition-opacity"
+          class="mt-3 overflow-x-auto border border-slate-400 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
@@ -185,7 +187,6 @@ loadCategories()
                 <th class="px-4 py-3 w-100">Editore</th>
                 <th class="px-4 py-3">Anno</th>
                 <th class="px-4 py-3 text-center">Copie totali</th>
-                <th class="px-4 py-3 text-center">Copie prestate</th>
                 <th class="px-4 py-3 text-center">Copie rimanenti</th>
                 <th class="px-4 py-3 text-end">Azioni</th>
               </tr>
@@ -211,36 +212,34 @@ loadCategories()
                   <span
                     class="inline-flex w-6 h-6 bg-gray-200 items-center justify-center rounded-lg font-bold"
                   >
-                    {{ book.borrowed_copies_count }}
-                  </span>
-                </td>
-                <td class="px-4 py-3 text-center text-slate-600">
-                  <span
-                    class="inline-flex w-6 h-6 bg-gray-200 items-center justify-center rounded-lg font-bold"
-                  >
                     {{ book.remaining_copies_count }}
                   </span>
                 </td>
                 <td class="px-4 py-3 text-slate-600">
                   <div class="flex items-center gap-2">
                     <RouterLink
+                      :to="`/admin/books/${book.id}/details`"
+                      class="border border-gray-400 font-medium w-20 text-center py-1 hover:bg-gray-200 text-gray-700"
+                      >Dettagli</RouterLink
+                    >
+                    <RouterLink
                       :to="`/admin/books/${book.id}/addCopies`"
-                      class="border font-semibold w-32 text-center py-1 bg-gray-50 hover:bg-gray-200 text-black"
+                      class="border border-emerald-400 hover:bg-emerald-200 font-medium w-30 text-center py-1   text-emerald-700"
                       >Aggiungi copie</RouterLink
                     >
                     <RouterLink
                       :to="`/admin/books/${book.id}/editCopies`"
-                      class="border font-semibold w-32 text-center py-1 bg-gray-50 hover:bg-gray-200 text-black"
+                      class="border border-blue-400 font-medium w-30 text-center py-1 hover:bg-gray-200 text-blue-700"
                       >Modifica copie</RouterLink
                     >
                     <RouterLink
                       :to="`/admin/books/${book.id}/addLoan`"
-                      class="border font-semibold px-3 py-1 bg-gray-50 hover:bg-gray-200 text-black"
+                      class="border border-blue-400 font-medium text-center py-1 px-3 hover:bg-gray-200 text-blue-700"
                       >Presta</RouterLink
                     >
                     <button
                       @click="askDelete(book)"
-                      class="bg-red-500 hover:bg-red-600 text-white cursor-pointer px-3 py-1 border border-black"
+                      class="border border-red-400 font-medium text-center py-1 px-3 hover:bg-gray-200 text-red-700"
                     >
                       Elimina
                     </button>
@@ -266,26 +265,7 @@ loadCategories()
           </p>
         </ConfirmDeleteModal>
 
-        <div v-if="meta" class="mt-4 flex items-center justify-between text-sm text-slate-600">
-          <p>Pagina {{ meta.current_page }} di {{ meta.last_page }} · {{ meta.total }} libri</p>
-
-          <div class="flex gap-2">
-            <button
-              :disabled="meta.current_page <= 1 || loading"
-              class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-              @click="goToPage(meta.current_page - 1)"
-            >
-              Precedente
-            </button>
-            <button
-              :disabled="meta.current_page >= meta.last_page || loading"
-              class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-              @click="goToPage(meta.current_page + 1)"
-            >
-              Successiva
-            </button>
-          </div>
-        </div>
+        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
       </section>
     </main>
   </div>

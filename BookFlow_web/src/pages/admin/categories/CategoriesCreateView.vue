@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import { storeCategories } from '../../api/categories'
+import { storeCategories } from './../../../api/categories'
  
 const router = useRouter()
 const errors = ref<Record<string, string[]>>({})

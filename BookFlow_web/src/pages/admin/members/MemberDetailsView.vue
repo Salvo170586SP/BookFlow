@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { destroyMemberLoan, fetchMember } from '../../api/members'
-import type { Member, MemberLoan } from '../../types/member'
+import { destroyMemberLoan, fetchMember } from './../../../api/members'
+import type { Member, MemberLoan } from './../../../types/member'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
 import LoaderComponent from '@/components/LoaderComponent.vue'
 

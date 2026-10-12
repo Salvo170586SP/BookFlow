@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import type { Author } from '../../types/author'
-import { fetchAuthors } from '../../api/authors'
-import type { PaginationMeta } from '../../types/book'
+import type { Author } from './../../../types/author'
+import { fetchAuthors } from './../../../api/authors'
+import type { PaginationMeta } from './../../../types/book'
 import LoaderComponent from '@/components/LoaderComponent.vue'
+import PaginationComponent from '@/components/PaginationComponent.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -67,11 +68,13 @@ watch(page, load, { immediate: true })
         {{ error }}
       </p>
 
-       <LoaderComponent v-if="loading" />
+      <LoaderComponent v-if="loading && authors.length === 0" />
 
       <section v-else>
+        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
+
         <div
-          class="mt-6 overflow-x-auto border border-slate-400 bg-white  transition-opacity"
+          class="mt-3 overflow-x-auto border border-slate-400 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
@@ -104,9 +107,9 @@ watch(page, load, { immediate: true })
                   </span>
                 </td>
                 <td class="px-4 py-3 font-medium text-slate-900 text-end">
-                 <div>
-                  <RouterLink :to="`/admin/authors/${author.id}/details`">Dettagli</RouterLink>
-                 </div>
+                  <div>
+                    <RouterLink class="border border-gray-400 px-3 py-1 hover:bg-gray-200 text-gray-700" :to="`/admin/authors/${author.id}/details`">Dettagli</RouterLink>
+                  </div>
                 </td>
               </tr>
 
@@ -119,26 +122,7 @@ watch(page, load, { immediate: true })
           </table>
         </div>
 
-        <div v-if="meta" class="mt-4 flex items-center justify-between text-sm text-slate-600">
-          <p>Pagina {{ meta.current_page }} di {{ meta.last_page }} · {{ meta.total }} autori</p>
-
-          <div class="flex gap-2">
-            <button
-              :disabled="meta.current_page <= 1 || loading"
-              class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-              @click="goToPage(meta.current_page - 1)"
-            >
-              Precedente
-            </button>
-            <button
-              :disabled="meta.current_page >= meta.last_page || loading"
-              class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-              @click="goToPage(meta.current_page + 1)"
-            >
-              Successiva
-            </button>
-          </div>
-        </div>
+        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
       </section>
     </main>
   </div>

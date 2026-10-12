@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { fetchAuthor } from '../../api/authors'
-import type { Author } from './../../types/author'
+import { fetchAuthor } from './../../../api/authors'
+import type { Author } from './../../../types/author'
 import LoaderComponent from '@/components/LoaderComponent.vue'
 
 const route = useRoute()

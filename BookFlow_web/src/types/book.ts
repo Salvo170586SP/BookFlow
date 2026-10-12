@@ -4,10 +4,27 @@ export interface Named {
   name: string
 }
 
+export interface BookLoanUser {
+  id: number
+  name: string
+  email?: string | null
+}
+
+export interface BookLoan {
+  id: number
+  user_id: number
+  copy_id: number
+  loaned_at: string
+  due_at: string
+  returned_at?: string | null
+  user?: BookLoanUser | null
+}
+
 export interface BookCopy {
   id: number
   barcode: string
   status: CopyStatus
+  loans?: BookLoan[]
 }
 
 export type CopyStatus = 'available' | 'damaged' | 'lost' | 'maintenance'

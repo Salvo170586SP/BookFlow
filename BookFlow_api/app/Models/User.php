@@ -39,7 +39,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Loan::class);
     }
-   
+
     public function detail(): HasOne
     {
         return $this->hasOne(MemberDetail::class);

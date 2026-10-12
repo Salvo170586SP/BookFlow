@@ -46,8 +46,12 @@ class BookController extends Controller
     public function show(Book $book): BookResource
     {
         return new BookResource(
-            $book->load(['publisher:id,name', 'category:id,name', 'authors:id,name'])
-                ->loadCount($this->copyCountDefinitions())
+            $book->load([
+                'publisher:id,name',
+                'category:id,name',
+                'authors:id,name',
+                'copies.loans.user.detail',
+            ])->loadCount($this->copyCountDefinitions())
         );
     }
 

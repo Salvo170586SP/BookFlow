@@ -20,7 +20,9 @@ class LoanResource extends JsonResource
             'copy_id' => $this->copy_id,
             'loaned_at' => $this->loaned_at,
             'due_at' => $this->due_at,
-            'copy' => new CopyResource($this->whenLoaded('copy')),
+            'returned_at' => $this->returned_at,
+            'user' => $this->whenLoaded('user', fn () => new UserResource($this->user)),
+            'copy' => $this->whenLoaded('copy', fn () => new CopyResource($this->copy)),
         ];
     }
 }

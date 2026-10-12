@@ -88,6 +88,29 @@ class BookIndexTest extends TestCase
             ->assertJsonPath('data.0.available_copies_count', 2);
     }
 
+    public function test_book_show_includes_loaned_members_for_each_copy(): void
+    {
+        $book = Book::factory()->create();
+        $copy = Copy::create([
+            'book_id' => $book->id,
+            'barcode' => "BOOK-{$book->id}-1",
+        ]);
+        $member = User::factory()->create();
+
+        Loan::create([
+            'copy_id' => $copy->id,
+            'user_id' => $member->id,
+            'loaned_at' => now()->subDays(2),
+            'due_at' => now()->addDays(12),
+        ]);
+
+        $this->actingAs(User::factory()->create())
+            ->getJson('/api/books/' . $book->id)
+            ->assertOk()
+            ->assertJsonPath('data.copies.0.loans.0.user.id', $member->id)
+            ->assertJsonPath('data.copies.0.loans.0.user.name', $member->name);
+    }
+
     public function test_listing_does_not_run_one_query_per_book(): void
     {
         Book::factory()->count(20)->create();

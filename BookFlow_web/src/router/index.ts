@@ -7,18 +7,19 @@ import ViewLayout from '@/ViewLayout.vue'
 import AdminLayout from '@/pages/admin/AdminLayout.vue'
 import AdminDashboardView from '@/pages/admin/AdminDashboardView.vue'
 import ForbiddenView from '@/pages/ForbiddenView.vue'
-import BooksView from '@/pages/admin/BooksView.vue'
-import AuthorsView from '@/pages/admin/AuthorsView.vue'
-import CategoriesView from '@/pages/admin/CategoriesView.vue'
-import CategoriesCreateView from '@/pages/admin/CategoriesCreateView.vue'
-import CategoriesEditView from '@/pages/admin/CategoriesEditView.vue'
-import AuthorsDetailsView from '@/pages/admin/AuthorsDetailsView.vue'
-import MembersView from '@/pages/admin/MembersView.vue'
-import MemberDetailsView from '@/pages/admin/MemberDetailsView.vue'
-import MemberEditView from '@/pages/admin/MemberEditView.vue'
-import BooksLoanView from '@/pages/admin/BooksLoanView.vue'
-import BooksAddCopiesView from '@/pages/admin/BooksAddCopiesView.vue'
-import BooksEditCopiesView from '@/pages/admin/BooksEditCopiesView.vue'
+import BooksView from '@/pages/admin/books/BooksView.vue'
+import AuthorsView from '@/pages/admin/authors/AuthorsView.vue'
+import CategoriesView from '@/pages/admin/categories/CategoriesView.vue'
+import CategoriesCreateView from '@/pages/admin/categories/CategoriesCreateView.vue'
+import CategoriesEditView from '@/pages/admin/categories/CategoriesEditView.vue'
+import AuthorsDetailsView from '@/pages/admin/authors/AuthorsDetailsView.vue'
+import MembersView from '@/pages/admin/members/MembersView.vue'
+import MemberDetailsView from '@/pages/admin/members/MemberDetailsView.vue'
+import MemberEditView from '@/pages/admin/members/MemberEditView.vue'
+import BooksLoanView from '@/pages/admin/books/BooksLoanView.vue'
+import BooksAddCopiesView from '@/pages/admin/books/BooksAddCopiesView.vue'
+import BooksEditCopiesView from '@/pages/admin/books/BooksEditCopiesView.vue'
+import BooksDetailsView from '@/pages/admin/books/BooksDetailsView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -51,6 +52,7 @@ const router = createRouter({
       children: [
         { path: 'dashboard', name: 'AdminDashboard', component: AdminDashboardView },
         { path: 'books', name: 'AdminBooks', component: BooksView },
+        { path: 'books/:id/details', name: 'AdminBooksDetails', component: BooksDetailsView },
         { path: 'books/:id/addLoan', name: 'AdminBooksLoan', component: BooksLoanView },
         { path: 'books/:id/addCopies', name: 'AdminBooksAddCopies', component: BooksAddCopiesView },
         { path: 'books/:id/editCopies', name: 'AdminBooksEditCopies', component: BooksEditCopiesView },
