@@ -1,5 +1,5 @@
 import http, { getCsrfCookie } from '@/api/http'
-import type { Book, BookCopy, CopyStatus, Paginated } from '@/types/book'
+import type { Book, BookCopy, BookStore, CopyStatus, Paginated } from '@/types/book'
 
 export async function fetchBooks(page = 1, categoryId?: number): Promise<Paginated<Book>> {
   const { data } = await http.get<Paginated<Book>>('/books', {
@@ -60,4 +60,10 @@ export async function storeBookCopies(
     payload,
   )
   return data.created_count
+}
+
+export async function storeBooks(payload: BookStore) {
+  await getCsrfCookie()
+  await http.post('/books', payload)
+  await fetchBooks()
 }

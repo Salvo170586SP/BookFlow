@@ -3,8 +3,7 @@ import { isAxiosError } from 'axios'
 import { ref, computed, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { destroyBooks, fetchBooks } from '../../../api/books'
-import type { Book, PaginationMeta } from '../../../types/book'
-import type { Category } from '../../../types/category'
+import type { Book, Named, PaginationMeta } from '../../../types/book'
 import { fetchCategoriesOptions } from '../../../api/categories'
 import LoaderComponent from '../../../components/LoaderComponent.vue'
 import ConfirmDeleteModal from '../../../components/ConfirmDeleteModal.vue'
@@ -20,7 +19,7 @@ const deleting = ref(false) // richiesta in corso
 const deleteError = ref<string | null>(null)
 
 const books = ref<Book[]>([])
-const categories = ref<Category[]>([])
+const categories = ref<Named[]>([])
 const meta = ref<PaginationMeta | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -134,7 +133,12 @@ loadCategories()
 <template>
   <div class="min-h-full bg-slate-50">
     <main class="mx-auto max-w-7xl px-4 py-10">
-      <h1 class="text-2xl font-bold tracking-tight text-slate-900 pb-7">Catalogo</h1>
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900 pb-7">Catalogo</h1>
+        <RouterLink class="border px-3 hover:bg-gray-200 font-medium" to="/admin/books/create">
+          Crea
+        </RouterLink>
+      </div>
 
       <LoaderComponent v-if="loading && books.length === 0" />
 
@@ -173,7 +177,7 @@ loadCategories()
         </p>
 
         <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
-        
+
         <div
           class="mt-3 overflow-x-auto border border-slate-400 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
@@ -224,7 +228,7 @@ loadCategories()
                     >
                     <RouterLink
                       :to="`/admin/books/${book.id}/addCopies`"
-                      class="border border-emerald-400 hover:bg-emerald-200 font-medium w-30 text-center py-1   text-emerald-700"
+                      class="border border-emerald-400 hover:bg-emerald-200 font-medium w-30 text-center py-1 text-emerald-700"
                       >Aggiungi copie</RouterLink
                     >
                     <RouterLink

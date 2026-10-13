@@ -1,6 +1,6 @@
 import http, { getCsrfCookie } from '@/api/http'
 import type { Category } from '@/types/category'
-import type { Paginated } from '@/types/book'
+import type { Named, Paginated } from '@/types/book'
 
 interface StorePayload {
     name: string
@@ -11,8 +11,8 @@ export async function fetchCategories(page = 1): Promise<Paginated<Category>> {
     return data
 }
 
-export async function fetchCategoriesOptions(): Promise<Category[]> {
-    const { data } = await http.get<{ data: Category[] }>('/categories/options')
+export async function fetchCategoriesOptions(): Promise<Named[]> {
+    const { data } = await http.get<{ data: Named[] }>('/categories/options')
     return data.data
 }
 

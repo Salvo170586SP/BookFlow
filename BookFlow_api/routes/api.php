@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BookController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CopyController;
 use App\Http\Controllers\Api\MemberController;
+use App\Http\Controllers\Api\PublisherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
 
     Route::get('/books', [BookController::class, 'index']);
+    Route::post('/books', [BookController::class, 'store']);
     Route::get('/books/{book}', [BookController::class, 'show']);
     Route::get('/books/{book}/copies/available', [BookController::class, 'availableCopies']);
     Route::get('/books/{book}/copies', [CopyController::class, 'index']);
@@ -32,8 +34,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/books/{book}/addCopy', [BookController::class, 'addCopy']);
     Route::delete('/books/{book}', [BookController::class, 'destroy']);
 
+    Route::get('/authors/options', [AuthorController::class, 'options']);
     Route::get('/authors', [AuthorController::class, 'index']);
     Route::get('/authors/{author}', [AuthorController::class, 'show']);
+
+    Route::get('/publishers/options', [PublisherController::class, 'options']);
 
     Route::get('/categories/options', [CategoryController::class, 'options']);
     Route::get('/categories', [CategoryController::class, 'index']);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookIndexRequest;
+use App\Http\Requests\BookRequest;
 use App\Http\Requests\CopyRequest;
 use App\Http\Resources\BookResource;
 use App\Http\Resources\CopyResource;
@@ -86,7 +87,7 @@ class BookController extends Controller
         $conflict = DB::transaction(function () use ($book): ?string {
             $copies = $book->copies()->lockForUpdate()->get();
 
-            if ($copies->contains(fn ($copy) => $copy->status !== 'available')) {
+            if ($copies->contains(fn($copy) => $copy->status !== 'available')) {
                 return 'Impossibile eliminare il libro: ci sono copie in prestito o non disponibili.';
             }
 
@@ -112,11 +113,27 @@ class BookController extends Controller
     {
         return [
             'copies as total_copies_count',
-            'copies as borrowed_copies_count' => fn (Builder $query) => $query
-                ->whereHas('loans', fn (Builder $loanQuery) => $loanQuery->whereNull('returned_at')),
-            'copies as available_copies_count' => fn (Builder $query) => $query
+            'copies as borrowed_copies_count' => fn(Builder $query) => $query
+                ->whereHas('loans', fn(Builder $loanQuery) => $loanQuery->whereNull('returned_at')),
+            'copies as available_copies_count' => fn(Builder $query) => $query
                 ->where('status', 'available')
-                ->whereDoesntHave('loans', fn (Builder $loanQuery) => $loanQuery->whereNull('returned_at')),
+                ->whereDoesntHave('loans', fn(Builder $loanQuery) => $loanQuery->whereNull('returned_at')),
         ];
+    }
+
+    public function store(BookRequest $request): BookResource
+    {
+        $data = $request->validated();
+        $authorIds = $data['author_ids'] ?? [];
+        unset($data['author_ids']);
+
+        $book = DB::transaction(function () use ($data, $authorIds): Book {
+            $book = Book::create($data);
+            $book->authors()->sync($authorIds);
+
+            return $book;
+        });
+
+        return new BookResource($book->load(['publisher', 'category', 'authors']));
     }
 }

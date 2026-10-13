@@ -44,6 +44,16 @@ export interface Book {
   available_copies_count: number
 }
 
+export interface BookStore {
+  title: string
+  isbn: string
+  description: string
+  published_year: string | null
+  publisher_id: string | null
+  category_id: string | null
+  author_ids: number[]
+}
+
 // Informazioni sulla paginazione, dentro la chiave "meta" della risposta
 export interface PaginationMeta {
   current_page: number
