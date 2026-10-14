@@ -51,14 +51,14 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-full bg-slate-50">
-    <main class="mx-auto max-w-7xl px-4 py-10">
+    <main class="p-10">
       <div class="space-y-5">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">
           Aggiungi Copie a <span v-if="book"> – {{ book.title }}</span>
         </h1>
         <RouterLink
           :to="`/admin/books`"
-          class="border font-semibold w-32 text-center px-3 bg-gray-50 hover:bg-gray-200 text-black"
+          class="border border-gray-300 font-semibold w-32 text-center px-3 bg-gray-50 hover:bg-gray-200 text-black"
           >Indietro</RouterLink
         >
       </div>
@@ -71,7 +71,7 @@ onMounted(async () => {
       </p>
 
       <section>
-        <form class="mt-6 border border-slate-400 bg-white p-5" @submit.prevent="addCopy">
+        <form class="mt-6 border border-slate-300 bg-white p-5" @submit.prevent="addCopy">
           <div class="mt-4 flex flex-wrap items-end gap-4">
             <label class="flex min-w-64 flex-col gap-1 text-sm text-slate-700">
               Numero di copie

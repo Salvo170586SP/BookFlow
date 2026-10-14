@@ -95,7 +95,7 @@ watch(page, load, { immediate: true })
 
 <template>
   <div class="min-h-full bg-slate-50">
-    <main class="mx-auto max-w-7xl px-4 py-10">
+    <main class="p-10">
       <div class="flex items-center space-x-5">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Membri registrati</h1>
         <p
@@ -117,7 +117,7 @@ watch(page, load, { immediate: true })
         <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
 
         <div
-          class="mt-3 overflow-x-auto border border-slate-400 bg-white transition-opacity"
+          class="mt-3 overflow-x-auto border border-slate-300 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
@@ -128,6 +128,7 @@ watch(page, load, { immediate: true })
                 <th class="px-4 py-3 w-80">telefono</th>
                 <th class="px-4 py-3 w-80">Indirizzo</th>
                 <th class="px-4 py-3 w-80">Città di Nascita</th>
+                <th class="px-4 py-3 w-80">Data di Nascita</th>
                 <th class="px-4 py-3 w-80">iscritto dal</th>
                 <th class="px-4 py-3 w-80 text-center">Libri in prestito</th>
                 <th class="px-4 py-3 text-end">Azioni</th>
@@ -148,6 +149,9 @@ watch(page, load, { immediate: true })
                   {{ member.detail?.birth_city || '-' }}
                 </td>
                 <td class="px-4 py-3 font-medium text-slate-900">
+                  {{ formatMemberDate(member.detail?.birth_date) || '-' }}
+                </td>
+                <td class="px-4 py-3 font-medium text-slate-900">
                   {{ formatMemberDate(member.created_at) }}
                 </td>
                 <td class="px-4 py-3 text-center">
@@ -161,19 +165,19 @@ watch(page, load, { immediate: true })
                   <div class="text-end space-x-1 flex">
                     <RouterLink
                       :to="`/admin/members/${member.id}/details`"
-                      class="hover:bg-gray-200 text-gray-700 cursor-pointer px-4 py-1 border border-gray-400 font-medium"
+                      class="hover:bg-gray-200 text-gray-700 cursor-pointer px-4 py-1 border border-gray-300 font-medium"
                     >
                       Dettagli
                     </RouterLink>
                     <RouterLink
                       :to="`/admin/members/${member.id}/edit`"
-                       class="hover:bg-gray-200 text-blue-700 cursor-pointer px-4 py-1 border border-blue-400 font-medium"
+                       class="hover:bg-gray-200 text-blue-700 cursor-pointer px-4 py-1 border border-blue-300 font-medium"
                     >
                       Modifica
                     </RouterLink>
                     <button
                       @click="askDelete(member)"
-                       class="hover:bg-gray-200 text-red-700 cursor-pointer px-4 py-1 border border-red-400 font-medium"
+                       class="hover:bg-gray-200 text-red-700 cursor-pointer px-4 py-1 border border-red-300 font-medium"
                     >
                       Elimina
                     </button>

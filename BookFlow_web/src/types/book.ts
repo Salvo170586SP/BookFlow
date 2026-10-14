@@ -33,6 +33,7 @@ export interface Book {
   id: number
   title: string
   isbn: string
+  description: string | null
   published_year: number | null
   publisher: Named | null
   category: Named

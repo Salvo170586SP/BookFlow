@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/books', [BookController::class, 'index']);
     Route::post('/books', [BookController::class, 'store']);
     Route::get('/books/{book}', [BookController::class, 'show']);
+    Route::put('/books/{book}', [BookController::class, 'update']);
     Route::get('/books/{book}/copies/available', [BookController::class, 'availableCopies']);
     Route::get('/books/{book}/copies', [CopyController::class, 'index']);
     Route::put('/books/{book}/copies/{copy}', [CopyController::class, 'update']);

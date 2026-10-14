@@ -59,7 +59,7 @@ watch(page, load, { immediate: true })
 
 <template>
   <div class="min-h-full bg-slate-50">
-    <main class="mx-auto max-w-7xl px-4 py-10">
+    <main class="p-10">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Autori</h1>
       </div>
@@ -74,7 +74,7 @@ watch(page, load, { immediate: true })
         <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
 
         <div
-          class="mt-3 overflow-x-auto border border-slate-400 bg-white transition-opacity"
+          class="mt-3 overflow-x-auto border border-slate-300 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">

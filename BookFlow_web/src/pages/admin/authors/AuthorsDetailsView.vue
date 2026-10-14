@@ -43,7 +43,7 @@ watch(() => route.params.id, load, { immediate: true })
 
 <template>
   <div class="min-h-full bg-slate-50">
-    <main class="mx-auto max-w-7xl px-4 py-10">
+    <main class="p-10">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Dettagli Autore</h1>
         <RouterLink to="/admin/authors">Indietro</RouterLink>
@@ -55,18 +55,18 @@ watch(() => route.params.id, load, { immediate: true })
         {{ error }}
       </p>
 
-      <section v-else-if="author" class="mt-6 border border-slate-400 bg-white p-6">
+      <section v-else-if="author" class="mt-6 border border-slate-300 bg-white p-6">
         <h2 class="text-lg font-semibold text-slate-900">{{ author.name }}</h2>
         <p class="mt-3 whitespace-pre-wrap text-sm text-slate-600">
           {{ author.bio || 'Nessuna biografia disponibile.' }}
         </p>
       </section>
 
-      <section v-else class="mt-6 border border-slate-400 bg-white p-6">
+      <section v-else class="mt-6 border border-slate-300 bg-white p-6">
         <p class="text-sm text-slate-600">Autore non trovato.</p>
       </section>
 
-      <section v-if="author" class="mt-6 border border-slate-400 bg-white p-6">
+      <section v-if="author" class="mt-6 border border-slate-300 bg-white p-6">
         <p class="text-lg font-semibold text-slate-900 mb-5">Libri</p>
         <div v-if="author.books.length" class="mt-3 flex flex-wrap space-y-2">
           <div

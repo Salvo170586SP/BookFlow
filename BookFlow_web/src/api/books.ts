@@ -67,3 +67,9 @@ export async function storeBooks(payload: BookStore) {
   await http.post('/books', payload)
   await fetchBooks()
 }
+
+export async function updateBook(payload: BookStore, bookId: number) {
+  await getCsrfCookie()
+  await http.put(`/books/${bookId}`, payload)
+  await fetchBooks()
+}

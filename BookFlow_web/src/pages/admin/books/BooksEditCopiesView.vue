@@ -130,14 +130,14 @@ watch(bookId, load, { immediate: true })
 
 <template>
   <div class="min-h-full bg-slate-50">
-    <main class="mx-auto max-w-7xl px-4 py-10">
+    <main class="p-10">
       <div class="space-y-5">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">
           Modifica copie di <span v-if="book">– {{ book.title }}</span>
         </h1>
         <RouterLink
           to="/admin/books"
-          class="border font-semibold w-32 text-center px-3 bg-gray-50 hover:bg-gray-200 text-black"
+          class="border border-gray-300 font-semibold w-32 text-center px-3 bg-gray-50 hover:bg-gray-200 text-black"
         >
           Indietro
         </RouterLink>
@@ -182,7 +182,7 @@ watch(bookId, load, { immediate: true })
           </label>
         </div>
 
-        <div class="overflow-x-auto border border-slate-400 bg-white">
+        <div class="overflow-x-auto border border-slate-300 bg-white">
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
             <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <tr>
@@ -210,7 +210,7 @@ watch(bookId, load, { immediate: true })
                   <div class="flex justify-end gap-2">
                     <button
                       type="button"
-                      class="border border-blue-700 bg-blue-600 px-3 py-1 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      class="border border-blue-500 px-3 py-1 text-blue-500 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
                       :disabled="
                         updatingCopyId !== null || draftStatuses[copy.id] === copy.status
                       "
@@ -220,7 +220,7 @@ watch(bookId, load, { immediate: true })
                     </button>
                     <button
                       type="button"
-                      class="border border-red-700 bg-red-600 px-3 py-1 text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      class="border border-red-500 text-red-500 px-3 py-1 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                       :disabled="deleting || updatingCopyId !== null"
                       @click="askDelete(copy)"
                     >

@@ -30,7 +30,7 @@ async function submit() {
 
 <template>
   <div class="min-h-full bg-slate-50">
-    <main class="mx-auto max-w-7xl px-4 py-10">
+    <main class="p-10">
       <div class="flex items-center justify-between mb-20">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Crea categoria</h1>
         <RouterLink
@@ -39,7 +39,7 @@ async function submit() {
           >Indietro</RouterLink
         >
       </div>
-      <form @submit.prevent="submit" class="w-100 p-5 border border-slate-400 bg-white mx-auto">
+      <form @submit.prevent="submit" class="w-100 p-5 border border-slate-300 bg-white mx-auto">
         <label for="name" class="flex flex-col font-semibold space-y-2">
           <span>Nome*</span>
           <input
@@ -47,14 +47,14 @@ async function submit() {
             id="name"
             v-model="form.name"
             required
-            class="bg-gray-100 border border-gray-400 px-2"
+            class="bg-gray-100 border border-gray-300 px-2"
           />
         </label>
         <span v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name[0] }}</span>
 
         <div class="mt-5 text-end">
           <button
-            class="bg-green-700 hover:bg-green-800 cursor-pointer border border-black px-3 py-1 text-white font-medium"
+            class="bg-green-400 hover:bg-green-700 cursor-pointer border border-gray-300 px-3 py-1 text-white font-medium"
           >
             Crea
           </button>

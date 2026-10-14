@@ -139,8 +139,13 @@ watch([page, bookId], load, { immediate: true })
 
 <template>
   <div class="min-h-full bg-slate-50">
-    <main class="mx-auto max-w-7xl px-4 py-10">
-      <h1 class="text-2xl font-bold tracking-tight text-slate-900">Presta libro</h1>
+    <main class="p-10">
+
+      <div class="space-y-3">
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Presta libro</h1>
+        <RouterLink to="/admin/books" class="font-semibold border border-gray-300 px-3 hover:bg-gray-200">Indietro</RouterLink>
+      </div>
+
       <p v-if="book" class="mt-2 text-slate-600">
         Libro selezionato: <span class="font-semibold">{{ book.title }}</span>
       </p>
@@ -162,7 +167,7 @@ watch([page, bookId], load, { immediate: true })
 
       <section v-else>
         <div
-          class="mt-6 overflow-x-auto border border-slate-400 bg-white transition-opacity"
+          class="mt-6 overflow-x-auto border border-slate-300 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
@@ -249,11 +254,11 @@ watch([page, bookId], load, { immediate: true })
 
         <form
           v-if="selectedMember"
-          class="mt-6 border border-slate-400 bg-white p-5"
+          class="mt-6 border border-slate-300 bg-white p-5"
           @submit.prevent="addLoan"
         >
           <h2 class="font-semibold text-slate-900">
-            Assegna una copia a <span class="capitalize">{{ selectedMember?.name }}</span> 
+            Assegna una copia a <span class="capitalize">{{ selectedMember?.name }}</span>
           </h2>
           <p class="text-sm font-semibold">*Selezionare prima un membro</p>
           <div class="mt-4 flex flex-wrap items-end gap-4">

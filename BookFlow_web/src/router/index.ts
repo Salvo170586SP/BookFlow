@@ -21,6 +21,7 @@ import BooksAddCopiesView from '@/pages/admin/books/BooksAddCopiesView.vue'
 import BooksEditCopiesView from '@/pages/admin/books/BooksEditCopiesView.vue'
 import BooksDetailsView from '@/pages/admin/books/BooksDetailsView.vue'
 import BooksCreateView from '@/pages/admin/books/BooksCreateView.vue'
+import BooksEditView from '@/pages/admin/books/BooksEditView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -54,6 +55,7 @@ const router = createRouter({
         { path: 'dashboard', name: 'AdminDashboard', component: AdminDashboardView },
         { path: 'books', name: 'AdminBooks', component: BooksView },
         { path: 'books/create', name: 'AdminBooksCreate', component: BooksCreateView },
+        { path: 'books/:id/edit', name: 'AdminBooksEdit', component: BooksEditView },
         { path: 'books/:id/details', name: 'AdminBooksDetails', component: BooksDetailsView },
         { path: 'books/:id/addLoan', name: 'AdminBooksLoan', component: BooksLoanView },
         { path: 'books/:id/addCopies', name: 'AdminBooksAddCopies', component: BooksAddCopiesView },

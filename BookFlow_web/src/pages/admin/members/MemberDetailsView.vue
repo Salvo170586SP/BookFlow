@@ -83,7 +83,7 @@ watch(() => route.params.id, load, { immediate: true })
 
 <template>
   <div class="min-h-full bg-slate-50">
-    <main class="mx-auto max-w-7xl px-4 py-10">
+    <main class="p-10">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Dettagli Membro</h1>
         <RouterLink to="/admin/members">Indietro</RouterLink>
@@ -95,7 +95,7 @@ watch(() => route.params.id, load, { immediate: true })
         {{ error }}
       </p>
 
-      <section v-if="member" class="mt-6 border border-slate-400 bg-white p-6">
+      <section v-if="member" class="mt-6 border border-slate-300 bg-white p-6">
         <h2 class="text-lg font-semibold text-slate-900 capitalize">{{ member.name }}</h2>
         <div class="flex gap-50 mt-3 text-sm text-slate-600">
           <div>
@@ -125,21 +125,21 @@ watch(() => route.params.id, load, { immediate: true })
         </div>
       </section>
 
-      <section v-else class="mt-6 border border-slate-400 bg-white p-6">
+      <section v-else class="mt-6 border border-slate-300 bg-white p-6">
         <p class="text-sm text-slate-600">Autore non trovato.</p>
       </section>
 
-      <section v-if="member" class="mt-6 border border-slate-400 bg-white p-6">
+      <section v-if="member" class="mt-6 border border-slate-300 bg-white p-6">
         <div class="flex justify-between mb-5">
           <p class="text-lg font-semibold text-slate-900">Libri in prestito</p>
-          <RouterLink class="border px-3 bg-gray-500 text-white hover:bg-gray-700" to="/admin/books"
+          <RouterLink class="border border-gray-300 px-3 bg-gray-50 text-gray-500 hover:bg-gray-100" to="/admin/books"
             >Prenota</RouterLink
           >
         </div>
 
         <div class="mt-3 flex flex-wrap space-y-2">
           <table
-            class="min-w-full divide-y divide-slate-200 text-left text-sm border border-slate-400"
+            class="min-w-full divide-y divide-slate-200 text-left text-sm border border-slate-300"
           >
             <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <tr>
@@ -154,14 +154,14 @@ watch(() => route.params.id, load, { immediate: true })
             <tbody class="divide-y divide-slate-100">
               <tr v-for="loan in member.loans" :key="loan.id">
                 <td class="px-4 py-3 text-slate-600">{{ loan.copy.book.title }}</td>
-                <td class="px-4 py-3 font-medium text-slate-900">{{ loan.copy.barcode }}</td>
+                <td class="px-4 py-3 text-xs font-medium text-slate-900">{{ loan.copy.barcode }}</td>
                 <td class="px-4 py-3 text-slate-600">{{ formatLoanDate(loan.loaned_at) }}</td>
                 <td class="px-4 py-3 text-slate-600">{{ formatLoanDate(loan.due_at) }}</td>
                 <td class="px-4 py-3 text-slate-600">
                   <div class="text-end space-x-3">
                     <button
                       @click="askDelete(loan)"
-                      class="bg-red-500 hover:bg-red-600 text-white cursor-pointer px-3 py-1 rounded-lg"
+                      class="bg-red-50 hover:bg-red-100 text-red-500 border border-red-300 cursor-pointer px-3 py-1"
                     >
                       Elimina
                     </button>

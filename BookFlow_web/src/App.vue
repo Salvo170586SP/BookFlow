@@ -8,7 +8,6 @@ const notification = useNotificationStore()
 
 <template>
   <div>
-    
     <RouterView />
 
     <div

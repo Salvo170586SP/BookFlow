@@ -25,7 +25,7 @@ onMounted(async () => {
       phone: currentMember.detail?.phone || '',
       address: currentMember.detail?.address || '',
       birth_city: currentMember.detail?.birth_city || '',
-      birth_date: currentMember.detail?.birth_date?.slice(0, 10) || '',
+      birth_date: currentMember.detail?.birth_date || '',
     }
     loading.value = false
   } catch {
@@ -59,7 +59,7 @@ async function submit() {
 
 <template>
   <div class="min-h-full bg-slate-50">
-    <main class="mx-auto max-w-7xl px-4 py-10">
+    <main class="p-10">
       <div class="flex items-center justify-between mb-20">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Modifica membro</h1>
         <RouterLink to="/admin/members">Indietro</RouterLink>
@@ -73,64 +73,64 @@ async function submit() {
       <form
         v-else
         @submit.prevent="submit"
-        class="w-100 p-5 bg-white mx-auto border border-slate-400"
+        class="w-100 p-5 bg-white mx-auto border border-slate-300"
       >
         <fieldset :disabled="loading || loadingMember || loadFailed" class="disabled:opacity-60">
-          <label for="name" class="flex flex-col font-semibold space-y-2">
-            <span>Nome*</span>
+          <label for="name" class="flex flex-col font-semibold mb-2">
+            <span class="text-sm">Nome*</span>
             <input
               type="text"
               id="name"
               v-model="form.name"
-              class="bg-gray-100 border border-gray-400 px-2"
+              class="bg-gray-100 border border-gray-300 px-2"
             />
           </label>
           <span v-if="errors.name" class="mt-1 text-sm text-red-600">{{ errors.name[0] }}</span>
 
-          <label for="phone" class="flex flex-col font-semibold space-y-2">
-            <span>Telefono</span>
+          <label for="phone" class="flex flex-col font-semibold mb-2">
+            <span class="text-sm">Telefono</span>
             <input
               type="text"
               id="phone"
               v-model="form.phone"
-              class="bg-gray-100 border border-gray-400 px-2"
+              class="bg-gray-100 border border-gray-300 px-2"
             />
           </label>
           <span v-if="errors.phone" class="mt-1 text-sm text-red-600">{{ errors.phone[0] }}</span>
 
-          <label for="address" class="flex flex-col font-semibold space-y-2">
-            <span>Indirizzo</span>
+          <label for="address" class="flex flex-col font-semibold mb-2">
+            <span class="text-sm">Indirizzo</span>
             <input
               type="text"
               id="address"
               v-model="form.address"
-              class="bg-gray-100 border border-gray-400 px-2"
+              class="bg-gray-100 border border-gray-300 px-2"
             />
           </label>
           <span v-if="errors.address" class="mt-1 text-sm text-red-600">{{
             errors.address[0]
           }}</span>
 
-          <label for="birth_city" class="flex flex-col font-semibold space-y-2">
-            <span>Città di nascita</span>
+          <label for="birth_city" class="flex flex-col font-semibold mb-2">
+            <span class="text-sm">Città di nascita</span>
             <input
               type="text"
               id="birth_city"
               v-model="form.birth_city"
-              class="bg-gray-100 border border-gray-400 px-2"
+              class="bg-gray-100 border border-gray-300 px-2"
             />
           </label>
           <span v-if="errors.birth_city" class="mt-1 text-sm text-red-600">{{
             errors.birth_city[0]
           }}</span>
 
-          <label for="birth_date" class="flex flex-col font-semibold space-y-2">
-            <span>Data di nascita</span>
+          <label for="birth_date" class="flex flex-col font-semibold mb-2">
+            <span class="text-sm">Data di nascita</span>
             <input
               type="date"
               id="birth_date"
               v-model="form.birth_date"
-              class="bg-gray-100 border border-gray-400 px-2"
+              class="bg-gray-100 border border-gray-300 px-2"
             />
           </label>
           <span v-if="errors.birth_date" class="mt-1 text-sm text-red-600">{{
@@ -139,7 +139,7 @@ async function submit() {
 
           <div class="mt-5 text-end">
             <button
-              class="bg-blue-700 hover:bg-blue-800 cursor-pointer border border-black px-3 py-1 text-white font-medium"
+              class="bg-blue-300 hover:bg-blue-500 cursor-pointer border border-blue-300 px-3 py-1 text-white font-medium"
             >
               {{
                 loadingMember

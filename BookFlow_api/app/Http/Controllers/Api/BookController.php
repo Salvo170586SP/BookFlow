@@ -136,4 +136,16 @@ class BookController extends Controller
 
         return new BookResource($book->load(['publisher', 'category', 'authors']));
     }
+
+
+    public function update(BookRequest $request, Book $book): BookResource
+    {
+        $data = $request->validated();
+        $authorIds = $data['author_ids'] ?? [];
+        unset($data['author_ids']);
+        $book->update($data);
+        $book->authors()->sync($authorIds);
+
+        return new BookResource($book->load(['publisher', 'category', 'authors']));
+    }
 }

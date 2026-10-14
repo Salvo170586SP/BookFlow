@@ -74,13 +74,13 @@ watch(() => route.params.id, load, { immediate: true })
 
 <template>
   <div class="min-h-full bg-slate-50">
-    <main class="mx-auto max-w-7xl px-4 py-10">
+    <main class="p-10">
       <h1 class="text-2xl font-bold tracking-tight text-slate-900 pb-7">
         Dettagli di <span v-if="book">{{ book.title }}</span>
       </h1>
       <RouterLink
         :to="`/admin/books`"
-        class="border font-semibold w-32 text-center px-3 bg-gray-50 hover:bg-gray-200 text-black"
+        class="border border-gray-300 font-semibold w-32 text-center px-3 bg-gray-50 hover:bg-gray-200 text-black"
         >Indietro</RouterLink
       >
 
@@ -91,7 +91,7 @@ watch(() => route.params.id, load, { immediate: true })
           {{ error }}
         </p>
 
-        <div v-if="book" class="mt-6 border border-slate-400 bg-white p-6">
+        <div v-if="book" class="mt-6 border border-slate-300 bg-white p-6">
           <h2 class="text-lg font-semibold text-slate-900 capitalize">{{ book.title }}</h2>
           <div class="flex gap-50 mt-3 text-sm text-slate-600">
             <div>
@@ -133,7 +133,7 @@ watch(() => route.params.id, load, { immediate: true })
             </div>
           </div>
 
-          <div class="mt-6 border border-slate-400 bg-white p-6">
+          <div class="mt-6 border border-slate-300 bg-white p-6">
             <h2 class="text-lg font-semibold text-slate-900 capitalize">Autori</h2>
             <div class="flex gap-5 mt-3 text-sm text-slate-600">
               <div v-for="author in book.authors" :key="author.id">
@@ -149,7 +149,7 @@ watch(() => route.params.id, load, { immediate: true })
           </div>
         </div>
 
-        <div v-if="book" class="mt-6 border border-slate-400 bg-white p-6">
+        <div v-if="book" class="mt-6 border border-slate-300 bg-white p-6">
           <h2 class="text-lg font-semibold text-slate-900">
             Copie prestate {{ book.borrowed_copies_count }}
           </h2>
