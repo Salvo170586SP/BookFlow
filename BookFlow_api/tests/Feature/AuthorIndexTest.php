@@ -29,6 +29,20 @@ class AuthorIndexTest extends TestCase
             ]);
     }
 
+    public function test_authors_can_be_searched_by_name_across_all_pages(): void
+    {
+        foreach (range(1, 10) as $number) {
+            Author::factory()->create(['name' => sprintf('A Catalog Author %02d', $number)]);
+        }
+        $matchingAuthor = Author::factory()->create(['name' => 'Z Global Search Result']);
+
+        $this->actingAs(User::factory()->create())
+            ->getJson('/api/authors?search=Global%20Search%20Result')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonPath('data.0.id', $matchingAuthor->id);
+    }
+
     public function test_show_author_returns_only_that_authors_books(): void
     {
         $author = Author::factory()->create();

@@ -15,6 +15,7 @@ const meta = ref<PaginationMeta | null>(null)
 
 const loading = ref(false)
 const error = ref<string | null>(null)
+const searchName = ref('')
 
 const page = computed(() => Math.max(Number(route.query.page) || 1, 1))
 
@@ -27,7 +28,7 @@ async function load() {
   error.value = null
 
   try {
-    const result = await fetchAuthors(page.value)
+    const result = await fetchAuthors(page.value, searchName.value.trim() || undefined)
 
     // Se nel frattempo è partita una richiesta più recente, questa risposta è vecchia
     if (requestId !== lastRequest) return
@@ -55,6 +56,18 @@ function goToPage(nextPage: number) {
 }
 
 watch(page, load, { immediate: true })
+watch(searchName, (_, __, onCleanup) => {
+  const timeout = window.setTimeout(() => {
+    if (page.value !== 1) {
+      goToPage(1)
+      return
+    }
+
+    void load()
+  }, 300)
+
+  onCleanup(() => window.clearTimeout(timeout))
+})
 </script>
 
 <template>
@@ -71,6 +84,17 @@ watch(page, load, { immediate: true })
       <LoaderComponent v-if="loading && authors.length === 0" />
 
       <section v-else>
+        <label for="byName" class="flex flex-col mt-5">
+          Cerca 
+          <input
+            type="text"
+            class="border border-gray-300 bg-white px-2"
+            v-model="searchName"
+            id="byName"
+            placeholder="cerca per nome..."
+          />
+        </label>
+
         <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
 
         <div
@@ -108,13 +132,17 @@ watch(page, load, { immediate: true })
                 </td>
                 <td class="px-4 py-3 font-medium text-slate-900 text-end">
                   <div>
-                    <RouterLink class="border border-gray-400 px-3 py-1 hover:bg-gray-200 text-gray-700" :to="`/admin/authors/${author.id}/details`">Dettagli</RouterLink>
+                    <RouterLink
+                      class="border border-gray-400 px-3 py-1 hover:bg-gray-200 text-gray-700"
+                      :to="`/admin/authors/${author.id}/details`"
+                      >Dettagli</RouterLink
+                    >
                   </div>
                 </td>
               </tr>
 
               <tr v-if="!loading && authors.length === 0">
-                <td colspan="3" class="px-4 py-8 text-center text-slate-500">
+                <td colspan="4" class="px-4 py-8 text-center text-slate-500">
                   Nessun autore trovato.
                 </td>
               </tr>

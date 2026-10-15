@@ -3,20 +3,28 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AuthorIndexRequest;
 use App\Http\Resources\AuthorResource;
 use App\Models\Author;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class AuthorController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public function index(AuthorIndexRequest $request): AnonymousResourceCollection
     {
+        $filters = $request->validated();
+
         $authors = Author::query()
             ->with('books')
+            ->when($filters['search'] ?? null, function (Builder $query, string $search) {
+                $term = '%' . addcslashes($search, '%_\\') . '%';
+                $query->where('name', 'like', $term);
+            })
             ->orderBy('name')
             ->orderBy('id')
-            ->paginate(12);
+            ->paginate(10);
 
         return AuthorResource::collection($authors);
     }

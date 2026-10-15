@@ -2,7 +2,7 @@
 import { isAxiosError } from 'axios'
 import { ref, computed, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { destroyBooks, fetchBooks } from '../../../api/books'
+import { destroyBooks, fetchBookYears, fetchBooks } from '../../../api/books'
 import type { Book, Named, PaginationMeta } from '../../../types/book'
 import { fetchCategoriesOptions } from '../../../api/categories'
 import LoaderComponent from '../../../components/LoaderComponent.vue'
@@ -20,10 +20,12 @@ const deleteError = ref<string | null>(null)
 
 const books = ref<Book[]>([])
 const categories = ref<Named[]>([])
+const availableYears = ref<number[]>([])
 const meta = ref<PaginationMeta | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 const searchTitle = ref('')
+const searchYear = ref<string | null>('')
 const isDraggingTable = ref(false)
 
 let tableDrag: { pointerId: number; startX: number; startY: number; scrollLeft: number } | null =
@@ -90,6 +92,14 @@ async function loadCategories() {
   }
 }
 
+async function loadYears() {
+  try {
+    availableYears.value = await fetchBookYears()
+  } catch {
+    console.error('Impossibile caricare gli anni di pubblicazione')
+  }
+}
+
 // La pagina corrente sta nell'URL (?page=2): il refresh e il tasto "indietro" funzionano
 const page = computed(() => Math.max(Number(route.query.page) || 1, 1))
 const categoryId = computed(() => {
@@ -109,7 +119,13 @@ async function load() {
   error.value = null
 
   try {
-    const result = await fetchBooks(page.value, categoryId.value)
+    const year = searchYear.value ? Number(searchYear.value) : undefined
+    const result = await fetchBooks(
+      page.value,
+      categoryId.value,
+      searchTitle.value.trim() || undefined,
+      year,
+    )
 
     // Se nel frattempo è partita una richiesta più recente, questa risposta è vecchia
     if (requestId !== lastRequest) return
@@ -150,12 +166,6 @@ function filterByCategory(event: Event) {
   })
 }
 
-const filteredBooks = computed(() => {
-  const term = searchTitle.value.trim().toLowerCase()
-  if (!term) return books.value
-  return books.value.filter((book) => book.title.toLowerCase().includes(term))
-})
-
 function askDelete(book: Book) {
   bookToDelete.value = book
   deleteError.value = null
@@ -184,7 +194,20 @@ async function deleteBook() {
 
 // L'URL conserva i filtri e la pagina, quindi funzionano refresh e tasto "indietro"
 watch([page, categoryId], load, { immediate: true })
+watch([searchTitle, searchYear], (_, __, onCleanup) => {
+  const timeout = window.setTimeout(() => {
+    if (page.value !== 1) {
+      goToPage(1)
+      return
+    }
+
+    void load()
+  }, 300)
+
+  onCleanup(() => window.clearTimeout(timeout))
+})
 loadCategories()
+loadYears()
 </script>
 
 <template>
@@ -192,7 +215,10 @@ loadCategories()
     <main class="p-10">
       <div class="flex justify-between items-center">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900 pb-7">Catalogo</h1>
-        <RouterLink class="border border-gray-300 px-3 bg-green-400 hover:bg-green-700 font-medium text-white" to="/admin/books/create">
+        <RouterLink
+          class="border border-gray-300 px-3 bg-green-400 hover:bg-green-700 font-medium text-white"
+          to="/admin/books/create"
+        >
           Crea
         </RouterLink>
       </div>
@@ -227,6 +253,20 @@ loadCategories()
               </option>
             </select>
           </label>
+
+          <label for="publishedYear" class="flex flex-col">
+            Anno di pubblicazione
+            <select
+              id="publishedYear"
+              v-model="searchYear"
+              class="w-50 border border-gray-300 bg-white"
+            >
+              <option value="">Tutti gli anni</option>
+              <option v-for="year in availableYears" :key="year" :value="year">
+                {{ year }}
+              </option>
+            </select>
+          </label>
         </div>
 
         <p v-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -247,12 +287,12 @@ loadCategories()
             <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <tr>
                 <th class="min-w-56 px-4 py-3">Titolo</th>
+                <th class="min-w-32 px-4 py-3 text-center">Copie totali</th>
+                <th class="min-w-36 px-4 py-3 text-center">Copie rimanenti</th>
                 <th class="min-w-64 px-4 py-3">Autori</th>
                 <th class="min-w-40 px-4 py-3">Categoria</th>
                 <th class="min-w-56 px-4 py-3">Editore</th>
                 <th class="min-w-24 px-4 py-3">Anno</th>
-                <th class="min-w-32 px-4 py-3 text-center">Copie totali</th>
-                <th class="min-w-36 px-4 py-3 text-center">Copie rimanenti</th>
                 <th
                   class="actions-column sticky right-0 z-20 min-w-max bg-slate-50 px-4 py-3 text-end"
                 >
@@ -262,16 +302,8 @@ loadCategories()
             </thead>
 
             <tbody class="divide-y divide-slate-100">
-              <tr v-for="book in filteredBooks" :key="book.id">
+              <tr v-for="book in books" :key="book.id">
                 <td class="min-w-56 px-4 py-3 font-medium text-slate-900">{{ book.title }}</td>
-                <td class="min-w-64 px-4 py-3 text-xs text-slate-600">
-                  {{ book.authors.map((a) => a.name).join(', ') }}
-                </td>
-                <td class="min-w-40 px-4 py-3 text-slate-600">{{ book.category.name }}</td>
-                <td class="min-w-56 px-4 py-3 text-xs text-slate-600">
-                  {{ book.publisher?.name ?? '—' }}
-                </td>
-                <td class="min-w-24 px-4 py-3 text-slate-600">{{ book.published_year ?? '—' }}</td>
                 <td class="min-w-32 px-4 py-3 text-center text-slate-600">
                   <span
                     class="inline-flex w-6 h-6 bg-gray-200 items-center justify-center rounded-lg font-bold"
@@ -286,6 +318,14 @@ loadCategories()
                     {{ book.remaining_copies_count }}
                   </span>
                 </td>
+                <td class="min-w-64 px-4 py-3 text-xs text-slate-600">
+                  {{ book.authors.map((a) => a.name).join(', ') }}
+                </td>
+                <td class="min-w-40 px-4 py-3 text-slate-600">{{ book.category.name }}</td>
+                <td class="min-w-56 px-4 py-3 text-xs text-slate-600">
+                  {{ book.publisher?.name ?? '—' }}
+                </td>
+                <td class="min-w-24 px-4 py-3 text-slate-600">{{ book.published_year ?? '—' }}</td>
                 <td
                   class="actions-column sticky right-0 z-10 min-w-max bg-white px-4 py-3 text-slate-600"
                 >

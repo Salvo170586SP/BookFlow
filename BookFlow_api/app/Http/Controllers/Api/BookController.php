@@ -20,7 +20,7 @@ class BookController extends Controller
     public function index(BookIndexRequest $request): AnonymousResourceCollection
     {
         $filters = $request->validated();
-        $perPage = $filters['per_page'] ?? 15;
+        $perPage = $filters['per_page'] ?? 10;
 
         $books = Book::query()
             // Carichiamo in anticipo le relazioni, e solo le colonne che servono
@@ -35,6 +35,10 @@ class BookController extends Controller
                 });
             })
             ->when($filters['category_id'] ?? null, fn(Builder $query, $id) => $query->where('category_id', $id))
+            ->when(
+                isset($filters['published_year']),
+                fn(Builder $query) => $query->where('published_year', $filters['published_year'])
+            )
             // Ordine stabile: il secondo criterio (id) evita doppioni o salti tra una pagina e l'altra
             ->orderBy('title')
             ->orderBy('id')
@@ -42,6 +46,17 @@ class BookController extends Controller
             ->withQueryString();
 
         return BookResource::collection($books);
+    }
+
+    public function years(): JsonResponse
+    {
+        return response()->json([
+            'data' => Book::query()
+                ->whereNotNull('published_year')
+                ->distinct()
+                ->orderByDesc('published_year')
+                ->pluck('published_year'),
+        ]);
     }
 
     public function show(Book $book): BookResource

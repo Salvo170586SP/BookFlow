@@ -23,9 +23,10 @@ class BookIndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'search'      => ['nullable', 'string', 'max:100'],
-            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
-            'per_page'    => ['nullable', 'integer', 'min:1', 'max:50'],
+            'search'         => ['nullable', 'string', 'max:100'],
+            'category_id'    => ['nullable', 'integer', 'exists:categories,id'],
+            'published_year' => ['nullable', 'integer', 'min:0', 'max:65535'],
+            'per_page'       => ['nullable', 'integer', 'min:1', 'max:50'],
         ];
     }
 }

@@ -1,11 +1,21 @@
 import http, { getCsrfCookie } from '@/api/http'
 import type { Book, BookCopy, BookStore, CopyStatus, Paginated } from '@/types/book'
 
-export async function fetchBooks(page = 1, categoryId?: number): Promise<Paginated<Book>> {
+export async function fetchBooks(
+  page = 1,
+  categoryId?: number,
+  search?: string,
+  publishedYear?: number,
+): Promise<Paginated<Book>> {
   const { data } = await http.get<Paginated<Book>>('/books', {
-    params: { page, category_id: categoryId },
+    params: { page, category_id: categoryId, search, published_year: publishedYear },
   })
   return data
+}
+
+export async function fetchBookYears(): Promise<number[]> {
+  const { data } = await http.get<{ data: number[] }>('/books/years')
+  return data.data
 }
 
 export async function fetchBook(bookId: number): Promise<Book> {

@@ -51,6 +51,53 @@ class BookIndexTest extends TestCase
             ->assertJsonPath('data.0.id', $matchingBook->id);
     }
 
+    public function test_books_can_be_searched_across_all_pages(): void
+    {
+        foreach (range(1, 15) as $number) {
+            Book::factory()->create(['title' => sprintf('A Catalog Book %02d', $number)]);
+        }
+        $matchingBook = Book::factory()->create(['title' => 'Z Global Search Result']);
+
+        $this->actingAs(User::factory()->create())
+            ->getJson('/api/books?search=Global%20Search%20Result')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonPath('data.0.id', $matchingBook->id);
+    }
+
+    public function test_books_can_be_filtered_by_published_year_across_all_pages(): void
+    {
+        foreach (range(1, 15) as $number) {
+            Book::factory()->create([
+                'title' => sprintf('A Catalog Book %02d', $number),
+                'published_year' => 1990,
+            ]);
+        }
+        $matchingBook = Book::factory()->create([
+            'title' => 'Z Book From Another Year',
+            'published_year' => 2020,
+        ]);
+
+        $this->actingAs(User::factory()->create())
+            ->getJson('/api/books?published_year=2020')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonPath('data.0.id', $matchingBook->id);
+    }
+
+    public function test_book_year_options_include_distinct_years_from_the_full_catalog(): void
+    {
+        Book::factory()->create(['published_year' => 2000]);
+        Book::factory()->create(['published_year' => 2020]);
+        Book::factory()->create(['published_year' => 2000]);
+        Book::factory()->create(['published_year' => null]);
+
+        $this->actingAs(User::factory()->create())
+            ->getJson('/api/books/years')
+            ->assertOk()
+            ->assertExactJson(['data' => [2020, 2000]]);
+    }
+
     public function test_book_index_reports_total_borrowed_and_remaining_copies(): void
     {
         $book = Book::factory()->create();
