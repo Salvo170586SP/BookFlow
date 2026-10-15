@@ -174,7 +174,7 @@ async function logout() {
     </section>
 
     <section class="overflow-auto h-full w-full">
-      <RouterView></RouterView>
+      <RouterView v-if="auth.hasRole('admin')"></RouterView>
     </section>
   </div>
 </template>

@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import LoginView from '@/pages/LoginView.vue'
-import DashboardView from '@/pages/guest/DashboardView.vue'
 import RegisterView from '@/pages/RegisterView.vue'
 import ViewLayout from '@/ViewLayout.vue'
 import AdminLayout from '@/pages/admin/AdminLayout.vue'
@@ -22,6 +21,8 @@ import BooksEditCopiesView from '@/pages/admin/books/BooksEditCopiesView.vue'
 import BooksDetailsView from '@/pages/admin/books/BooksDetailsView.vue'
 import BooksCreateView from '@/pages/admin/books/BooksCreateView.vue'
 import BooksEditView from '@/pages/admin/books/BooksEditView.vue'
+import MemberDashboardView from '@/pages/guest/MemberDashboardView.vue'
+import MemberLayout from '@/pages/guest/MemberLayout.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -44,7 +45,12 @@ const router = createRouter({
       path: '/register', name: 'register', component: RegisterView, meta: { guest: true }
     },
     {
-      path: '/dashboard', name: 'dashboard', component: DashboardView, meta: { requiresAuth: true, roles: ['member'] }
+      path: '/dashboard',
+      component: MemberLayout,
+      meta: { requiresAuth: true, roles: ['member'] },
+      children: [
+        { path: '', name: 'dashboard', component: MemberDashboardView },
+      ],
     },
     {
       path: '/admin',
