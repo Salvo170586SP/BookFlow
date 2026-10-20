@@ -35,6 +35,7 @@ export interface Book {
   isbn: string
   description: string | null
   published_year: number | null
+  member_id: number | null
   publisher: Named | null
   category: Named
   authors: Named[]
@@ -53,6 +54,8 @@ export interface BookStore {
   publisher_id: string | null
   category_id: string | null
   author_ids: number[]
+  new_author_name?: string | null
+  new_publisher_name?: string | null
 }
 
 // Informazioni sulla paginazione, dentro la chiave "meta" della risposta

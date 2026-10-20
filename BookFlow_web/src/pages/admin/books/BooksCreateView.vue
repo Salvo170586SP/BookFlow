@@ -22,6 +22,8 @@ const authors = ref<Named[]>([])
 const authorsLoading = ref(true)
 const authorsError = ref<string | null>(null)
 const authorSearch = ref('')
+const manualPublisher = ref(false)
+const manualAuthor = ref(false)
 
 const filteredAuthors = computed(() => {
   const query = authorSearch.value.trim().toLocaleLowerCase()
@@ -45,9 +47,30 @@ const form = ref({
   description: '',
   published_year: '',
   publisher_id: '',
+  new_publisher_name: '',
   category_id: '',
   author_ids: [] as number[],
+  new_author_name: '',
 })
+
+function togglePublisherMode() {
+  form.value.publisher_id = ''
+  form.value.new_publisher_name = ''
+  delete errors.value.publisher_id
+  delete errors.value.new_publisher_name
+}
+
+function toggleAuthorMode() {
+  form.value.author_ids = []
+  form.value.new_author_name = ''
+  authorSearch.value = ''
+  for (const field of Object.keys(errors.value)) {
+    if (field === 'author_ids' || field.startsWith('author_ids.')) {
+      delete errors.value[field]
+    }
+  }
+  delete errors.value.new_author_name
+}
 
 async function loadCategories() {
   categoriesLoading.value = true
@@ -168,7 +191,15 @@ async function submit() {
             </label>
             <span class="mt-1 text-sm text-red-600">{{ errors.isbn }}</span>
 
-            <label for="publisher_id" class="flex flex-col font-semibold mb-2">
+            <label class="mb-2 flex items-center gap-2 text-sm">
+              <input v-model="manualPublisher" type="checkbox" @change="togglePublisherMode" />
+              <span>Inserisci l'editore manualmente</span>
+            </label>
+            <label
+              v-if="!manualPublisher"
+              for="publisher_id"
+              class="mb-2 flex flex-col font-semibold"
+            >
               <span class="text-sm">Editore</span>
               <select
                 id="publisher_id"
@@ -186,15 +217,45 @@ async function submit() {
                 </option>
               </select>
             </label>
-            <span class="mt-1 text-sm text-red-600">{{ errors.publisher_id }}</span>
-            <div v-if="publishersLoading" class="mt-1 text-sm text-slate-600" role="status">
+            <span v-if="!manualPublisher" class="mt-1 text-sm text-red-600">{{
+              errors.publisher_id
+            }}</span>
+            <label
+              v-if="manualPublisher"
+              for="new_publisher_name"
+              class="mb-2 flex flex-col font-semibold"
+            >
+              <span class="text-sm">Editore</span>
+              <input
+                id="new_publisher_name"
+                v-model="form.new_publisher_name"
+                type="text"
+                maxlength="255"
+                class="bg-gray-100 border border-gray-300 px-2"
+              />
+            </label>
+            <span v-if="manualPublisher" class="mt-1 text-sm text-red-600">{{
+              errors.new_publisher_name
+            }}</span>
+            <div
+              v-if="!manualPublisher && publishersLoading"
+              class="mt-1 text-sm text-slate-600"
+              role="status"
+            >
               Caricamento editori...
             </div>
-            <div v-else-if="publishersError" class="mt-1 text-sm text-red-600" role="alert">
+            <div
+              v-else-if="!manualPublisher && publishersError"
+              class="mt-1 text-sm text-red-600"
+              role="alert"
+            >
               {{ publishersError }}
               <button type="button" class="ml-1 underline" @click="loadPublishers">Riprova</button>
             </div>
-            <div v-else-if="publishers.length === 0" class="mt-1 text-sm text-slate-600">
+            <div
+              v-else-if="!manualPublisher && publishers.length === 0"
+              class="mt-1 text-sm text-slate-600"
+            >
               Nessun editore disponibile.
             </div>
 
@@ -229,59 +290,82 @@ async function submit() {
             </div>
           </div>
           <div>
-            <label for="author-search" class="mt-3 flex flex-col font-semibold">
-              <span class="text-sm">Autori (facoltativo)</span>
-              <span class="text-xs">Cerca autore</span>
+            <label class="mt-3 flex items-center gap-2 text-sm">
+              <input v-model="manualAuthor" type="checkbox" @change="toggleAuthorMode" />
+              <span>Inserisci l'autore manualmente</span>
+            </label>
+            <template v-if="!manualAuthor">
+              <label for="author-search" class="mt-3 flex flex-col font-semibold">
+                <span class="text-sm">Autori (facoltativo)</span>
+                <span class="text-xs">Cerca autore</span>
+                <input
+                  id="author-search"
+                  v-model="authorSearch"
+                  type="search"
+                  placeholder="Digita il nome di un autore"
+                  :disabled="authorsLoading || authorsError !== null || authors.length === 0"
+                  class="bg-gray-100 border border-gray-300 px-2"
+                />
+              </label>
+
+              <label for="author_ids" class="mb-2 flex flex-col font-semibold">
+                <select
+                  id="author_ids"
+                  v-model="form.author_ids"
+                  multiple
+                  :disabled="authorsLoading || authorsError !== null || authors.length === 0"
+                  class="bg-gray-100 border border-gray-300 px-2"
+                  aria-describedby="authors-help"
+                >
+                  <option v-for="author in filteredAuthors" :key="author.id" :value="author.id">
+                    {{ author.name }}
+                  </option>
+                </select>
+              </label>
+              <button
+                type="button"
+                class="mt-1 self-start text-sm underline text-red-500"
+                :disabled="form.author_ids.length === 0"
+                @click="form.author_ids = []"
+              >
+                Rimuovi tutti gli autori
+              </button>
+              <div>
+                <span id="authors-help" class="mt-1 text-xs text-slate-600">
+                  Puoi lasciare il campo vuoto. Cerca per nome e seleziona uno o più autori (Ctrl/Cmd
+                  + clic). Gli autori già selezionati restano visibili anche quando non corrispondono
+                  alla ricerca.
+                </span>
+                <span class="mt-1 text-sm text-red-600">{{ authorValidationError }}</span>
+                <div v-if="authorsLoading" class="mt-1 text-sm text-slate-600" role="status">
+                  Caricamento autori...
+                </div>
+                <div v-else-if="authorsError" class="mt-1 text-sm text-red-600" role="alert">
+                  {{ authorsError }}
+                  <button type="button" class="ml-1 underline" @click="loadAuthors">Riprova</button>
+                </div>
+                <div
+                  v-else-if="authors.length === 0"
+                  class="mt-1 text-sm text-red-600"
+                  role="alert"
+                >
+                  Nessun autore disponibile.
+                </div>
+              </div>
+            </template>
+            <label v-else for="new_author_name" class="mt-3 flex flex-col font-semibold">
+              <span class="text-sm">Autore</span>
               <input
-                id="author-search"
-                v-model="authorSearch"
-                type="search"
-                placeholder="Digita il nome di un autore"
-                :disabled="authorsLoading || authorsError !== null || authors.length === 0"
+                id="new_author_name"
+                v-model="form.new_author_name"
+                type="text"
+                maxlength="255"
                 class="bg-gray-100 border border-gray-300 px-2"
               />
             </label>
-
-            <label for="author_ids" class="flex flex-col font-semibold mb-2">
-              <select
-                id="author_ids"
-                v-model="form.author_ids"
-                multiple
-                :disabled="authorsLoading || authorsError !== null || authors.length === 0"
-                class="bg-gray-100 border border-gray-300 px-2"
-                aria-describedby="authors-help"
-              >
-                <option v-for="author in filteredAuthors" :key="author.id" :value="author.id">
-                  {{ author.name }}
-                </option>
-              </select>
-            </label>
-            <button
-              type="button"
-              class="mt-1 self-start text-sm underline text-red-500"
-              :disabled="form.author_ids.length === 0"
-              @click="form.author_ids = []"
-            >
-              Rimuovi tutti gli autori
-            </button>
-            <div>
-              <span id="authors-help" class="mt-1 text-xs text-slate-600">
-                Puoi lasciare il campo vuoto. Cerca per nome e seleziona uno o più autori (Ctrl/Cmd
-                + clic). Gli autori già selezionati restano visibili anche quando non corrispondono
-                alla ricerca.
-              </span>
-              <span class="mt-1 text-sm text-red-600">{{ authorValidationError }}</span>
-              <div v-if="authorsLoading" class="mt-1 text-sm text-slate-600" role="status">
-                Caricamento autori...
-              </div>
-              <div v-else-if="authorsError" class="mt-1 text-sm text-red-600" role="alert">
-                {{ authorsError }}
-                <button type="button" class="ml-1 underline" @click="loadAuthors">Riprova</button>
-              </div>
-              <div v-else-if="authors.length === 0" class="mt-1 text-sm text-red-600" role="alert">
-                Nessun autore disponibile.
-              </div>
-            </div>
+            <span v-if="manualAuthor" class="mt-1 text-sm text-red-600">{{
+              errors.new_author_name
+            }}</span>
           </div>
         </div>
 

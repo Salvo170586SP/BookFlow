@@ -20,6 +20,7 @@ class BookResource extends JsonResource
             'isbn' => $this->isbn,
             'description' => $this->description,
             'published_year' => $this->published_year,
+            'member_id' => $this->member_id,
             'copies' => $this->whenLoaded('copies', fn () => $this->copies->map(function ($copy) {
                 return [
                     'id' => $copy->id,

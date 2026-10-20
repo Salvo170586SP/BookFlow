@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/me/loans', [AuthController::class, 'indexMine']);
+    Route::get('/me/books-created', [AuthController::class, 'booksMember']);
 
     Route::get('/books/years', [BookController::class, 'years']);
     Route::get('/books', [BookController::class, 'index']);

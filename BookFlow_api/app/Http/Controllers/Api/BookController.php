@@ -8,12 +8,16 @@ use App\Http\Requests\BookRequest;
 use App\Http\Requests\CopyRequest;
 use App\Http\Resources\BookResource;
 use App\Http\Resources\CopyResource;
+use App\Models\Author;
 use App\Models\Book;
+use App\Models\Publisher;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class BookController extends Controller
 {
@@ -22,7 +26,13 @@ class BookController extends Controller
         $filters = $request->validated();
         $perPage = $filters['per_page'] ?? 10;
 
-        $books = Book::query()
+        $query = Book::query();
+
+        if ($request->user()?->hasRole('member')) {
+            $query->hasAvailableCopy();
+        }
+
+        $books = $query
             // Carichiamo in anticipo le relazioni, e solo le colonne che servono
             ->with(['publisher:id,name', 'category:id,name', 'authors:id,name'])
             ->withCount($this->copyCountDefinitions())
@@ -48,10 +58,16 @@ class BookController extends Controller
         return BookResource::collection($books);
     }
 
-    public function years(): JsonResponse
+    public function years(Request $request): JsonResponse
     {
+        $query = Book::query();
+
+        if ($request->user()?->hasRole('member')) {
+            $query->hasAvailableCopy();
+        }
+
         return response()->json([
-            'data' => Book::query()
+            'data' => $query
                 ->whereNotNull('published_year')
                 ->distinct()
                 ->orderByDesc('published_year')
@@ -59,8 +75,20 @@ class BookController extends Controller
         ]);
     }
 
-    public function show(Book $book): BookResource
+    public function show(Request $request, Book $book): BookResource
     {
+        $user = $request->user();
+        if (
+            $user?->hasRole('member')
+            && $book->member_id !== $user->getKey()
+            && ! Book::query()
+                ->hasAvailableCopy()
+                ->whereKey($book->getKey())
+                ->exists()
+        ) {
+            abort(404);
+        }
+
         return new BookResource(
             $book->load([
                 'publisher:id,name',
@@ -140,14 +168,38 @@ class BookController extends Controller
     {
         $data = $request->validated();
         $authorIds = $data['author_ids'] ?? [];
+        $newAuthorName = $data['new_author_name'] ?? null;
+        $newPublisherName = $data['new_publisher_name'] ?? null;
         unset($data['author_ids']);
+        unset($data['new_author_name'], $data['new_publisher_name']);
+        $isMember = $request->user()?->hasRole('member') ?? false;
+        $data['member_id'] = $isMember
+            ? $request->user()->getKey()
+            : null;
 
-        $book = DB::transaction(function () use ($data, $authorIds): Book {
-            $book = Book::create($data);
-            $book->authors()->sync($authorIds);
+        $book = DB::transaction(
+            function () use ($data, $authorIds, $newAuthorName, $newPublisherName, $isMember): Book {
+                if ($newPublisherName !== null) {
+                    $data['publisher_id'] = Publisher::create(['name' => $newPublisherName])->getKey();
+                }
 
-            return $book;
-        });
+                if ($newAuthorName !== null) {
+                    $authorIds[] = Author::create(['name' => $newAuthorName])->getKey();
+                }
+
+                $book = Book::create($data);
+                $book->authors()->sync($authorIds);
+
+                if ($isMember) {
+                    $book->copies()->create([
+                        'barcode' => 'BF-' . Str::ulid(),
+                        'status' => 'available',
+                    ]);
+                }
+
+                return $book;
+            }
+        );
 
         return new BookResource($book->load(['publisher', 'category', 'authors']));
     }
@@ -157,9 +209,27 @@ class BookController extends Controller
     {
         $data = $request->validated();
         $authorIds = $data['author_ids'] ?? [];
+        $newAuthorName = $data['new_author_name'] ?? null;
+        $newPublisherName = $data['new_publisher_name'] ?? null;
         unset($data['author_ids']);
-        $book->update($data);
-        $book->authors()->sync($authorIds);
+        unset($data['new_author_name'], $data['new_publisher_name']);
+
+        $book = DB::transaction(
+            function () use ($data, $authorIds, $newAuthorName, $newPublisherName, $book): Book {
+                if ($newPublisherName !== null) {
+                    $data['publisher_id'] = Publisher::create(['name' => $newPublisherName])->getKey();
+                }
+
+                if ($newAuthorName !== null) {
+                    $authorIds[] = Author::create(['name' => $newAuthorName])->getKey();
+                }
+
+                $book->update($data);
+                $book->authors()->sync($authorIds);
+
+                return $book;
+            }
+        );
 
         return new BookResource($book->load(['publisher', 'category', 'authors']));
     }

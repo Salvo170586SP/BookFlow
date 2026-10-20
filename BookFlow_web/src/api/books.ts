@@ -13,6 +13,18 @@ export async function fetchBooks(
   return data
 }
 
+export async function fetchBookCreated(
+  page = 1,
+  categoryId?: number,
+  search?: string,
+  publishedYear?: number
+): Promise<Paginated<Book>> {
+  const { data } = await http.get<Paginated<Book>>(`/me/books-created`, {
+    params: { page, category_id: categoryId, search, published_year: publishedYear },
+  })
+  return data
+}
+
 export async function fetchBookYears(): Promise<number[]> {
   const { data } = await http.get<{ data: number[] }>('/books/years')
   return data.data
@@ -75,7 +87,6 @@ export async function storeBookCopies(
 export async function storeBooks(payload: BookStore) {
   await getCsrfCookie()
   await http.post('/books', payload)
-  await fetchBooks()
 }
 
 export async function updateBook(payload: BookStore, bookId: number) {
@@ -83,3 +94,4 @@ export async function updateBook(payload: BookStore, bookId: number) {
   await http.put(`/books/${bookId}`, payload)
   await fetchBooks()
 }
+

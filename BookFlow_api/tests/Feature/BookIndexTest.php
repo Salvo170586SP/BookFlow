@@ -37,6 +37,76 @@ class BookIndexTest extends TestCase
             ]);
     }
 
+    public function test_members_only_see_books_with_available_copies_in_the_catalog(): void
+    {
+        $member = User::factory()->create()->assignRole('member');
+        $availableBook = Book::factory()->create();
+        $unavailableBook = Book::factory()->create();
+        Book::factory()->create();
+
+        Copy::create([
+            'book_id' => $availableBook->id,
+            'barcode' => "BOOK-{$availableBook->id}-1",
+            'status' => 'available',
+        ]);
+        Copy::create([
+            'book_id' => $unavailableBook->id,
+            'barcode' => "BOOK-{$unavailableBook->id}-1",
+            'status' => 'maintenance',
+        ]);
+
+        $this->actingAs($member)
+            ->getJson('/api/books')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonPath('data.0.id', $availableBook->id);
+    }
+
+    public function test_member_book_year_options_only_include_years_with_available_copies(): void
+    {
+        $member = User::factory()->create()->assignRole('member');
+        $availableBook = Book::factory()->create(['published_year' => 2020]);
+        $unavailableBook = Book::factory()->create(['published_year' => 2010]);
+        Book::factory()->create(['published_year' => 2000]);
+
+        Copy::create([
+            'book_id' => $availableBook->id,
+            'barcode' => "BOOK-{$availableBook->id}-1",
+            'status' => 'available',
+        ]);
+        Copy::create([
+            'book_id' => $unavailableBook->id,
+            'barcode' => "BOOK-{$unavailableBook->id}-1",
+            'status' => 'lost',
+        ]);
+
+        $this->actingAs($member)
+            ->getJson('/api/books/years')
+            ->assertOk()
+            ->assertExactJson(['data' => [2020]]);
+    }
+
+    public function test_members_cannot_open_an_unavailable_book_donated_by_another_member(): void
+    {
+        $donor = User::factory()->create()->assignRole('member');
+        $member = User::factory()->create()->assignRole('member');
+        $book = Book::factory()->create(['member_id' => $donor->id]);
+
+        Copy::create([
+            'book_id' => $book->id,
+            'barcode' => "BOOK-{$book->id}-1",
+            'status' => 'maintenance',
+        ]);
+
+        $this->actingAs($member)
+            ->getJson("/api/books/{$book->id}")
+            ->assertNotFound();
+
+        $this->actingAs($donor)
+            ->getJson("/api/books/{$book->id}")
+            ->assertOk();
+    }
+
     public function test_books_can_be_filtered_by_category(): void
     {
         $category = Category::factory()->create();

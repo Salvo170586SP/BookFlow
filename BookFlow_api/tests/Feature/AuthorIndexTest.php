@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Author;
 use App\Models\Book;
+use App\Models\Copy;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -60,5 +61,31 @@ class AuthorIndexTest extends TestCase
             ->assertJsonFragment(['title' => $books[0]->title])
             ->assertJsonFragment(['title' => $books[1]->title])
             ->assertJsonMissing(['title' => $otherBook->title]);
+    }
+
+    public function test_member_author_books_only_include_books_with_available_copies(): void
+    {
+        $member = User::factory()->create()->assignRole('member');
+        $author = Author::factory()->create();
+        $availableBook = Book::factory()->create();
+        $unavailableBook = Book::factory()->create();
+        $author->books()->attach([$availableBook->id, $unavailableBook->id]);
+
+        Copy::create([
+            'book_id' => $availableBook->id,
+            'barcode' => "BOOK-{$availableBook->id}-1",
+            'status' => 'available',
+        ]);
+        Copy::create([
+            'book_id' => $unavailableBook->id,
+            'barcode' => "BOOK-{$unavailableBook->id}-1",
+            'status' => 'maintenance',
+        ]);
+
+        $this->actingAs($member)
+            ->getJson("/api/authors/{$author->id}")
+            ->assertOk()
+            ->assertJsonCount(1, 'data.books')
+            ->assertJsonPath('data.books.0.id', $availableBook->id);
     }
 }

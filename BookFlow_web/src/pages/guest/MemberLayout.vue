@@ -54,6 +54,12 @@ async function logout() {
             >
               Presi in prestito
             </RouterLink>
+            <RouterLink
+              to="/books-created"
+              class="border border-[#242820]/30 px-4 py-2 text-sm font-bold transition-colors hover:border-[#d45b3e] hover:text-[#d45b3e]"
+            >
+              I tuoi libri
+            </RouterLink>
 
             <div class="group relative">
               <button
@@ -61,9 +67,11 @@ async function logout() {
               >
                 Donazioni
               </button>
-              <div class="hidden group-hover:flex flex-col gap-3 absolute bg-emerald-200 border p-3 w-50">
+              <div
+                class="hidden group-hover:flex flex-col gap-3 absolute bg-emerald-200 border p-3 w-50"
+              >
                 <RouterLink
-                  to=""
+                  to="/add-books"
                   class="border border-[#242820]/30 px-4 py-2 text-sm font-bold bg-[#d45b3e]/5 transition-colors hover:border-[#d45b3e] hover:text-[#d45b3e]"
                 >
                   Dona un libro
