@@ -1,23 +1,15 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
 import { fetchBooks } from '@/api/books'
 import { useAuthStore } from '@/stores/auth'
 import type { Book } from '@/types/book'
 
 const auth = useAuthStore()
-const router = useRouter()
 const books = ref<Book[]>([])
 const totalBooks = ref<number | null>(null)
 const booksLoading = ref(true)
 const booksError = ref<string | null>(null)
-
 const coverColors = ['bg-[#64704a]', 'bg-[#d45b3e]', 'bg-[#d5ad56]', 'bg-[#64704a]']
-
-async function logout() {
-  await auth.logout()
-  await router.push('/')
-}
 
 onMounted(async () => {
   try {
@@ -73,9 +65,11 @@ onMounted(async () => {
               </div>
               <div class="border border-[#242820]/25 bg-[#f5f1e8] p-4">
                 <p class="text-xs font-bold uppercase tracking-[0.12em] text-[#65675e]">
-                 Presi in prestito
+                  Copie prese in prestito
                 </p>
-                <p class="mt-2 font-serif text-4xl italic text-[#d45b3e]">{{ books.length }}</p>
+                <p class="mt-2 font-serif text-4xl italic text-[#d45b3e]">
+                  {{ auth?.user?.loans.length }}
+                </p>
               </div>
               <div class="border border-[#242820]/25 bg-[#f5f1e8] p-4">
                 <p class="text-xs font-bold uppercase tracking-[0.12em] text-[#65675e]">
@@ -105,7 +99,7 @@ onMounted(async () => {
             </div>
 
             <p class="max-w-sm font-medium leading-7 text-[#65675e]">
-              Anteprima dei tuoi libri presi in prestito.
+              Una selezione di storie dal catalogo della biblioteca.
             </p>
           </div>
 
@@ -131,10 +125,11 @@ onMounted(async () => {
           </div>
 
           <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <article
+            <RouterLink
               v-for="(book, index) in books"
               :key="book.id"
-              class="flex min-h-72 flex-col border border-[#242820]/25 bg-[#f5f1e8] p-4"
+              :to="`/books/${book.id}/details`"
+              class="flex min-h-72 flex-col border border-[#242820]/25 bg-[#f5f1e8] p-4 transition-colors hover:border-[#d45b3e]"
             >
               <div
                 class="flex h-20 items-end border border-[#242820]/20 p-4 text-[#f5f1e8]"
@@ -162,15 +157,26 @@ onMounted(async () => {
                     : 'Nessuna copia disponibile'
                 }}
               </p>
-            </article>
+            </RouterLink>
           </div>
           <div class="text-center mt-10">
-            <RouterLink to="" class="border px-5 py-3 font-medium border-[#d45b3e]/40 bg-[#d45b3e]/10 hover:bg-[#d45b3e]/40"
-              >Tutti libri in prestito</RouterLink
+            <RouterLink
+              to="/books"
+              class="border px-5 py-3 font-medium border-[#d45b3e]/40 bg-[#d45b3e]/10 hover:bg-[#d45b3e]/40"
+              >Esplora tutto il catalogo</RouterLink
             >
           </div>
         </div>
       </section>
     </main>
+    <footer class="border-t border-[#242820]/20">
+      <div
+        class="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-6 text-center text-xs text-[#65675e] sm:flex-row sm:items-center sm:justify-between sm:px-8"
+      >
+        <span class="font-black tracking-tight text-[#242820]">Bookflow</span>
+        <span>Una biblioteca sociale, fatta per essere condivisa.</span>
+        <RouterLink to="/" class="font-semibold hover:text-[#d45b3e]">Torna alla home</RouterLink>
+      </div>
+    </footer>
   </div>
 </template>

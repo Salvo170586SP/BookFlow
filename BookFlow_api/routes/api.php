@@ -22,6 +22,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/me/loans', [AuthController::class, 'indexMine']);
 
     Route::get('/books/years', [BookController::class, 'years']);
     Route::get('/books', [BookController::class, 'index']);
@@ -35,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // La richiesta deve essere autenticata; BookController verifica anche il ruolo admin.
     Route::post('/books/{book}/addCopy', [BookController::class, 'addCopy']);
     Route::delete('/books/{book}', [BookController::class, 'destroy']);
+
 
     Route::get('/authors/options', [AuthorController::class, 'options']);
     Route::get('/authors', [AuthorController::class, 'index']);

@@ -15,15 +15,19 @@ import AuthorsDetailsView from '@/pages/admin/authors/AuthorsDetailsView.vue'
 import MembersView from '@/pages/admin/members/MembersView.vue'
 import MemberDetailsView from '@/pages/admin/members/MemberDetailsView.vue'
 import MemberEditView from '@/pages/admin/members/MemberEditView.vue'
+import BooksDetailsView from '@/pages/admin/books/BooksDetailsView.vue'
 import BooksLoanView from '@/pages/admin/books/BooksLoanView.vue'
 import BooksAddCopiesView from '@/pages/admin/books/BooksAddCopiesView.vue'
 import BooksEditCopiesView from '@/pages/admin/books/BooksEditCopiesView.vue'
-import BooksDetailsView from '@/pages/admin/books/BooksDetailsView.vue'
 import BooksCreateView from '@/pages/admin/books/BooksCreateView.vue'
 import BooksEditView from '@/pages/admin/books/BooksEditView.vue'
 import MemberDashboardView from '@/pages/guest/MemberDashboardView.vue'
 import MemberLayout from '@/pages/guest/MemberLayout.vue'
-
+import BooksMemberView from '@/pages/guest/books/BooksMemberView.vue'
+import BooksDetailsMemberView from '@/pages/guest/books/BooksDetailsMemberView.vue'
+import BooksLoanMemberView from '@/pages/guest/books/BooksLoanMemberView.vue'
+import LoansBooksView from '@/pages/guest/loansBooks/LoansBooksView.vue'
+  
 declare module 'vue-router' {
   interface RouteMeta {
     requiresAuth?: boolean
@@ -50,6 +54,10 @@ const router = createRouter({
       meta: { requiresAuth: true, roles: ['member'] },
       children: [
         { path: '', name: 'dashboard', component: MemberDashboardView },
+        { path: '/books', name: 'MemberBooks', component: BooksMemberView },
+        { path: '/books/:id/details', name: 'MemberDetailsBooks', component: BooksDetailsMemberView },
+        { path: '/books/:id/addLoan', name: 'MemberLoanBooks', component: BooksLoanMemberView },
+        { path: '/loans-books', name: 'MemberLoansBooks', component: LoansBooksView },
       ],
     },
     {

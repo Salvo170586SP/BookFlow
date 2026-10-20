@@ -10,6 +10,14 @@ interface UpdatePayload {
   birth_date: string
 }
 
+interface CreatedLoan {
+  id: number
+  copy: {
+    id: number
+    barcode: string
+  }
+}
+
 export async function fetchMembers(page = 1): Promise<Paginated<Member>> {
   const { data } = await http.get<Paginated<Member>>('/members', { params: { page } })
   return data
@@ -38,8 +46,9 @@ export async function destroyMemberLoan(memberId: number, loanId: number): Promi
 
 export async function createMemberLoan(
   memberId: number,
-  payload: { copy_id: number; due_at: string },
-): Promise<void> {
+  payload: { copy_id: number; due_at: string } | { book_id: number; due_at: string },
+): Promise<CreatedLoan> {
   await getCsrfCookie()
-  await http.post(`/members/${memberId}/loans`, payload)
+  const { data } = await http.post<{ data: CreatedLoan }>(`/members/${memberId}/loans`, payload)
+  return data.data
 }

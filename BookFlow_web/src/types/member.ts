@@ -1,5 +1,16 @@
+import type { Named } from '@/types/book'
+
 export interface BookCopy {
+  id: number
   title: string
+}
+
+export interface MyLoanBook extends BookCopy {
+  published_year: number | null
+  publisher: Named | null
+  category: Named
+  authors: Named[]
+  available_copies_count: number
 }
 
 export interface CopyLoan {
@@ -12,6 +23,12 @@ export interface MemberLoan {
   loaned_at: string
   due_at: string
   copy: CopyLoan
+}
+
+export interface MyLoan extends Omit<MemberLoan, 'copy'> {
+  copy: Omit<CopyLoan, 'book'> & {
+    book: MyLoanBook
+  }
 }
 
 export interface MemberDetail {

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthLoginRequest;
 use App\Http\Requests\AuthRegisterRequest;
+use App\Http\Resources\LoanResource;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -13,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Http\Resources\UserResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class AuthController extends Controller
 {
@@ -54,6 +57,33 @@ class AuthController extends Controller
 
     public function me(Request $request): UserResource
     {
-        return new UserResource($request->user()->load('roles'));
+        return new UserResource($request->user()->load('roles', 'loans'));
+    }
+
+    public function indexMine(Request $request): AnonymousResourceCollection
+    {
+        $loans = $request->user()
+            ->loans()
+            ->whereNull('returned_at')
+            ->with([
+                'copy.book' => fn ($query) => $query
+                    ->with([
+                        'publisher:id,name',
+                        'category:id,name',
+                        'authors:id,name',
+                    ])
+                    ->withCount([
+                        'copies as available_copies_count' => fn (Builder $query) => $query
+                            ->where('status', 'available')
+                            ->whereDoesntHave(
+                                'loans',
+                                fn (Builder $loanQuery) => $loanQuery->whereNull('returned_at')
+                            ),
+                    ]),
+            ])
+            ->latest('loaned_at')
+            ->paginate(12);
+
+        return LoanResource::collection($loans);
     }
 }

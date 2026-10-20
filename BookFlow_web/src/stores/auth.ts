@@ -7,6 +7,7 @@ export interface User {
     name: string
     email: string,
     roles: string[]
+    loans: string[]
 }
 
 interface LoginPayload {
@@ -34,7 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
         const { data } = await http.get<{ data: User }>('/me')
         user.value = data.data
     }
-
+  
     // Chiede al server "chi sono?" una sola volta all'avvio dell'app
     async function init() {
         if (ready.value) return

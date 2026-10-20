@@ -72,22 +72,56 @@ class MemberController extends Controller
 
     public function addLoan(Request $request, User $member): LoanResource
     {
-        abort_unless($request->user()?->hasRole('admin'), 403);
+        $user = $request->user();
+        $isAdmin = $user?->hasRole('admin') ?? false;
+        $isMemberBookingForSelf = $user?->is($member) && $member->hasRole('member');
+
+        abort_unless($isAdmin || $isMemberBookingForSelf, 403);
         abort_unless($member->hasRole('member'), 404);
 
-        $data = $request->validate([
-            'copy_id' => ['required', 'integer', 'exists:copies,id'],
+        $rules = [
             'due_at' => ['required', 'date', 'after:now'],
-        ]);
+        ];
 
-        $loan = DB::transaction(function () use ($member, $data): Loan {
-            $copy = Copy::query()
-                ->lockForUpdate()
-                ->findOrFail($data['copy_id']);
+        if ($isAdmin) {
+            $rules['copy_id'] = ['required', 'integer', 'exists:copies,id'];
+            $rules['book_id'] = ['prohibited'];
+        } else {
+            $rules['copy_id'] = ['prohibited'];
+            $rules['book_id'] = ['required', 'integer', 'exists:books,id'];
+        }
+
+        $data = $request->validate($rules);
+
+        $loan = DB::transaction(function () use ($member, $data, $isAdmin): Loan {
+            if ($isAdmin) {
+                $copy = Copy::query()
+                    ->lockForUpdate()
+                    ->findOrFail($data['copy_id']);
+            } else {
+                $copy = Copy::query()
+                    ->where('book_id', $data['book_id'])
+                    ->where('status', 'available')
+                    ->whereDoesntHave('loans', fn($query) => $query->whereNull('returned_at'))
+                    ->inRandomOrder()
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$copy) {
+                    throw ValidationException::withMessages([
+                        'book_id' => 'Non ci sono copie disponibili per questo libro.',
+                    ]);
+                }
+            }
 
             if ($copy->status !== 'available' || $copy->activeLoan()->exists()) {
+                $errorField = $isAdmin ? 'copy_id' : 'book_id';
+                $errorMessage = $isAdmin
+                    ? 'La copia selezionata non è disponibile per il prestito.'
+                    : 'Non ci sono copie disponibili per questo libro.';
+
                 throw ValidationException::withMessages([
-                    'copy_id' => 'La copia selezionata non è disponibile per il prestito.',
+                    $errorField => $errorMessage,
                 ]);
             }
 
