@@ -240,7 +240,14 @@ loadYears()
               class="flex min-h-80 flex-col border border-[#242820]/25 bg-[#ede7da] p-4"
             >
               <div class="flex items-start gap-4">
+                <img
+                  v-if="book.cover"
+                  :src="book.cover"
+                  :alt="`Copertina di ${book.title}`"
+                  class="aspect-[3/4] w-24 shrink-0 border border-[#242820]/20 object-cover"
+                />
                 <div
+                  v-else
                   role="img"
                   :aria-label="`Segnaposto copertina per ${book.title}`"
                   class="flex aspect-[3/4] w-24 shrink-0 flex-col items-center justify-center gap-3 border border-[#242820]/20 p-2 text-center text-[#f5f1e8]"

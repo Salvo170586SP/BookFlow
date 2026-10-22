@@ -32,6 +32,7 @@ export type CopyStatus = 'available' | 'damaged' | 'lost' | 'maintenance'
 export interface Book {
   id: number
   title: string
+  cover: string | null
   isbn: string
   description: string | null
   published_year: number | null
@@ -48,6 +49,7 @@ export interface Book {
 
 export interface BookStore {
   title: string
+  cover?: File | null
   isbn: string
   description: string
   published_year: string | null

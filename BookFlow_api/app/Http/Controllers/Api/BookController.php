@@ -17,7 +17,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
+use Throwable;
 
 class BookController extends Controller
 {
@@ -155,6 +158,18 @@ class BookController extends Controller
     public function store(BookRequest $request): BookResource
     {
         $data = $request->validated();
+        $cover = $data['cover'] ?? null;
+        unset($data['cover']);
+        $coverPath = $cover?->store('covers', 'public');
+
+        if ($cover !== null && $coverPath === false) {
+            throw new RuntimeException('Impossibile salvare la copertina del libro.');
+        }
+
+        if ($coverPath !== null) {
+            $data['cover'] = $coverPath;
+        }
+
         $authorIds = $data['author_ids'] ?? [];
         $newAuthorName = $data['new_author_name'] ?? null;
         $newPublisherName = $data['new_publisher_name'] ?? null;
@@ -165,29 +180,37 @@ class BookController extends Controller
             ? $request->user()->getKey()
             : null;
 
-        $book = DB::transaction(
-            function () use ($data, $authorIds, $newAuthorName, $newPublisherName, $isMember): Book {
-                if ($newPublisherName !== null) {
-                    $data['publisher_id'] = Publisher::create(['name' => $newPublisherName])->getKey();
+        try {
+            $book = DB::transaction(
+                function () use ($data, $authorIds, $newAuthorName, $newPublisherName, $isMember): Book {
+                    if ($newPublisherName !== null) {
+                        $data['publisher_id'] = Publisher::create(['name' => $newPublisherName])->getKey();
+                    }
+
+                    if ($newAuthorName !== null) {
+                        $authorIds[] = Author::create(['name' => $newAuthorName])->getKey();
+                    }
+
+                    $book = Book::create($data);
+                    $book->authors()->sync($authorIds);
+
+                    if ($isMember) {
+                        $book->copies()->create([
+                            'barcode' => 'BF-' . Str::ulid(),
+                            'status' => 'available',
+                        ]);
+                    }
+
+                    return $book;
                 }
-
-                if ($newAuthorName !== null) {
-                    $authorIds[] = Author::create(['name' => $newAuthorName])->getKey();
-                }
-
-                $book = Book::create($data);
-                $book->authors()->sync($authorIds);
-
-                if ($isMember) {
-                    $book->copies()->create([
-                        'barcode' => 'BF-' . Str::ulid(),
-                        'status' => 'available',
-                    ]);
-                }
-
-                return $book;
+            );
+        } catch (Throwable $exception) {
+            if ($coverPath !== null) {
+                Storage::disk('public')->delete($coverPath);
             }
-        );
+
+            throw $exception;
+        }
 
         return new BookResource($book->load(['publisher', 'category', 'authors']));
     }
@@ -196,28 +219,53 @@ class BookController extends Controller
     public function update(BookRequest $request, Book $book): BookResource
     {
         $data = $request->validated();
+        $previousCover = $book->cover;
+        $cover = $data['cover'] ?? null;
+        unset($data['cover']);
+        $coverPath = $cover?->store('covers', 'public');
+
+        if ($cover !== null && $coverPath === false) {
+            throw new RuntimeException('Impossibile salvare la copertina del libro.');
+        }
+
+        if ($coverPath !== null) {
+            $data['cover'] = $coverPath;
+        }
+
         $authorIds = $data['author_ids'] ?? [];
         $newAuthorName = $data['new_author_name'] ?? null;
         $newPublisherName = $data['new_publisher_name'] ?? null;
         unset($data['author_ids']);
         unset($data['new_author_name'], $data['new_publisher_name']);
 
-        $book = DB::transaction(
-            function () use ($data, $authorIds, $newAuthorName, $newPublisherName, $book): Book {
-                if ($newPublisherName !== null) {
-                    $data['publisher_id'] = Publisher::create(['name' => $newPublisherName])->getKey();
+        try {
+            $book = DB::transaction(
+                function () use ($data, $authorIds, $newAuthorName, $newPublisherName, $book): Book {
+                    if ($newPublisherName !== null) {
+                        $data['publisher_id'] = Publisher::create(['name' => $newPublisherName])->getKey();
+                    }
+
+                    if ($newAuthorName !== null) {
+                        $authorIds[] = Author::create(['name' => $newAuthorName])->getKey();
+                    }
+
+                    $book->update($data);
+                    $book->authors()->sync($authorIds);
+
+                    return $book;
                 }
-
-                if ($newAuthorName !== null) {
-                    $authorIds[] = Author::create(['name' => $newAuthorName])->getKey();
-                }
-
-                $book->update($data);
-                $book->authors()->sync($authorIds);
-
-                return $book;
+            );
+        } catch (Throwable $exception) {
+            if ($coverPath !== null) {
+                Storage::disk('public')->delete($coverPath);
             }
-        );
+
+            throw $exception;
+        }
+
+        if ($coverPath !== null && $previousCover !== null) {
+            Storage::disk('public')->delete($previousCover);
+        }
 
         return new BookResource($book->load(['publisher', 'category', 'authors']));
     }

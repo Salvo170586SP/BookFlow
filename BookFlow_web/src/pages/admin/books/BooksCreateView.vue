@@ -43,6 +43,7 @@ const authorValidationError = computed(
 
 const form = ref({
   title: '',
+  cover: null as File | null,
   isbn: '',
   description: '',
   published_year: '',
@@ -70,6 +71,12 @@ function toggleAuthorMode() {
     }
   }
   delete errors.value.new_author_name
+}
+
+function selectCover(event: Event) {
+  const input = event.target as HTMLInputElement
+  form.value.cover = input.files?.[0] ?? null
+  delete errors.value.cover
 }
 
 async function loadCategories() {
@@ -144,6 +151,31 @@ async function submit() {
       <form @submit.prevent="submit" class="w-full p-5 border border-slate-300 bg-white mx-auto">
         <div class="grid grid-cols-2 gap-3">
           <div>
+            <div class="mb-2">
+              <label for="cover" class="flex flex-col gap-2">
+                <span class="text-xs font-bold uppercase tracking-[0.12em] text-[#65675e]"
+                  >Immagine della copertina</span
+                >
+                <input
+                  type="file"
+                  id="cover"
+                  accept="image/jpeg,image/png,image/webp"
+                  aria-describedby="cover-help"
+                  @change="selectCover"
+                  class="border border-[#242820]/25 bg-[#f5f1e8] px-3 py-2.5 outline-none focus:border-[#d45b3e]"
+                />
+              </label>
+              <span id="cover-help" class="text-sm text-[#65675e]"
+                >JPG, PNG o WebP, massimo 5 MB. Facoltativa.</span
+              >
+              <span v-if="form.cover" class="text-sm text-[#65675e]"
+                >File selezionato: {{ form.cover.name }}</span
+              >
+              <span v-if="errors.cover" class="text-sm text-[#8d3827]" role="alert">{{
+                errors.cover
+              }}</span>
+            </div>
+
             <label for="title" class="flex flex-col font-semibold mb-2">
               <span class="text-sm">Titolo*</span>
               <input
@@ -332,9 +364,9 @@ async function submit() {
               </button>
               <div>
                 <span id="authors-help" class="mt-1 text-xs text-slate-600">
-                  Puoi lasciare il campo vuoto. Cerca per nome e seleziona uno o più autori (Ctrl/Cmd
-                  + clic). Gli autori già selezionati restano visibili anche quando non corrispondono
-                  alla ricerca.
+                  Puoi lasciare il campo vuoto. Cerca per nome e seleziona uno o più autori
+                  (Ctrl/Cmd + clic). Gli autori già selezionati restano visibili anche quando non
+                  corrispondono alla ricerca.
                 </span>
                 <span class="mt-1 text-sm text-red-600">{{ authorValidationError }}</span>
                 <div v-if="authorsLoading" class="mt-1 text-sm text-slate-600" role="status">

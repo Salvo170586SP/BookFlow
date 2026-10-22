@@ -86,12 +86,42 @@ export async function storeBookCopies(
 
 export async function storeBooks(payload: BookStore) {
   await getCsrfCookie()
+  if (payload.cover instanceof File) {
+    await http.post('/books', toBookFormData(payload))
+    return
+  }
+
   await http.post('/books', payload)
 }
 
 export async function updateBook(payload: BookStore, bookId: number) {
   await getCsrfCookie()
+  if (payload.cover instanceof File) {
+    const formData = toBookFormData(payload)
+    formData.append('_method', 'PUT')
+    await http.post(`/books/${bookId}`, formData)
+    await fetchBooks()
+    return
+  }
+
   await http.put(`/books/${bookId}`, payload)
   await fetchBooks()
 }
 
+function toBookFormData(payload: BookStore): FormData {
+  const formData = new FormData()
+
+  for (const [key, value] of Object.entries(payload)) {
+    if (value === null || value === undefined) continue
+
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        formData.append(`${key}[]`, String(item))
+      }
+    } else {
+      formData.append(key, value)
+    }
+  }
+
+  return formData
+}

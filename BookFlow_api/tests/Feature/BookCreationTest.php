@@ -3,11 +3,14 @@
 namespace Tests\Feature;
 
 use App\Models\Author;
+use App\Models\Book;
 use App\Models\Category;
 use App\Models\Copy;
 use App\Models\Publisher;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class BookCreationTest extends TestCase
@@ -29,6 +32,47 @@ class BookCreationTest extends TestCase
             ->assertJsonCount(2, 'data.authors')
             ->assertJsonFragment(['id' => $authors[0]->id, 'name' => $authors[0]->name])
             ->assertJsonFragment(['id' => $authors[1]->id, 'name' => $authors[1]->name]);
+    }
+
+    public function test_book_can_be_created_with_a_cover_image(): void
+    {
+        Storage::fake('public');
+        $cover = UploadedFile::fake()->image('cover.jpg');
+
+        $response = $this->actingAs(User::factory()->create())
+            ->withHeader('Accept', 'application/json')
+            ->post('/api/books', [
+                'title' => 'Libro con copertina',
+                'isbn' => '9781234567898',
+                'category_id' => Category::factory()->create()->id,
+                'cover' => $cover,
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.title', 'Libro con copertina');
+
+        $this->assertStringContainsString('/storage/covers/', $response->json('data.cover'));
+        $book = Book::query()->where('isbn', '9781234567898')->sole();
+        $this->assertDatabaseHas('books', ['id' => $book->id, 'cover' => $book->cover]);
+        Storage::disk('public')->assertExists($book->cover);
+    }
+
+    public function test_book_cover_must_be_an_image(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs(User::factory()->create())
+            ->withHeader('Accept', 'application/json')
+            ->post('/api/books', [
+                'title' => 'Libro con file non valido',
+                'isbn' => '9781234567899',
+                'category_id' => Category::factory()->create()->id,
+                'cover' => UploadedFile::fake()->create('document.pdf', 100, 'application/pdf'),
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('cover');
+
+        $this->assertDatabaseCount('books', 0);
+        $this->assertSame([], Storage::disk('public')->allFiles('covers'));
     }
 
     public function test_book_can_be_created_with_new_author_and_publisher_names(): void

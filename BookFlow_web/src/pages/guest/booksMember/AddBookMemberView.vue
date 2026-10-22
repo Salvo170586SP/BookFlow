@@ -28,6 +28,7 @@ const manualAuthor = ref(false)
 
 const form = ref({
   title: '',
+  cover: null as File | null,
   isbn: '',
   description: '',
   published_year: '',
@@ -118,6 +119,12 @@ async function loadOptions() {
 
 onMounted(loadOptions)
 
+function selectCover(event: Event) {
+  const input = event.target as HTMLInputElement
+  form.value.cover = input.files?.[0] ?? null
+  delete errors.value.cover
+}
+
 async function submit() {
   loading.value = true
   errors.value = {}
@@ -187,6 +194,29 @@ async function submit() {
 
         <div class="grid gap-6 lg:grid-cols-2">
           <div class="space-y-4">
+            <label for="cover" class="flex flex-col gap-2">
+              <span class="text-xs font-bold uppercase tracking-[0.12em] text-[#65675e]"
+                >Immagine della copertina</span
+              >
+              <input
+                type="file"
+                id="cover"
+                accept="image/jpeg,image/png,image/webp"
+                aria-describedby="cover-help"
+                @change="selectCover"
+                class="border border-[#242820]/25 bg-[#f5f1e8] px-3 py-2.5 outline-none focus:border-[#d45b3e]"
+              />
+            </label>
+            <span id="cover-help" class="text-sm text-[#65675e]"
+              >JPG, PNG o WebP, massimo 5 MB. Facoltativa.</span
+            >
+            <span v-if="form.cover" class="text-sm text-[#65675e]"
+              >File selezionato: {{ form.cover.name }}</span
+            >
+            <span v-if="errors.cover" class="text-sm text-[#8d3827]" role="alert">{{
+              errors.cover
+            }}</span>
+
             <label for="title" class="flex flex-col gap-2">
               <span class="text-xs font-bold uppercase tracking-[0.12em] text-[#65675e]"
                 >Titolo*</span

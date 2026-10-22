@@ -50,6 +50,7 @@ class BookRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
+            'cover' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'isbn' => [
                 'required',
                 'string',

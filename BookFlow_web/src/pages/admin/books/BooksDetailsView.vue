@@ -91,59 +91,91 @@ watch(() => route.params.id, load, { immediate: true })
           {{ error }}
         </p>
 
-        <div v-if="book" class="mt-6 border border-slate-300 bg-white p-6">
-          <h2 class="text-lg font-semibold text-slate-900 capitalize">{{ book.title }}</h2>
-          <div class="flex gap-50 mt-3 text-sm text-slate-600">
-            <div>
-              <p>
-                Isbn: <span class="font-semibold">{{ book.isbn || '-' }}</span>
-              </p>
-              <p>
-                Categoria:
-                <span class="font-semibold">{{ book.category.name || '-' }}</span>
-              </p>
-              <p>
-                Autori:
-                <span class="font-semibold">{{ book.authors?.length }}</span>
-              </p>
-              <p>
-                Editore:
-                <span class="font-semibold">{{ book.publisher?.name }}</span>
-              </p>
-            </div>
-            <div class="flex flex-col">
-              <p>
-                Anno di pubblicazione:
-                <span class="font-semibold">{{ book.published_year || '-' }}</span>
-              </p>
-            </div>
-            <div>
-              <p>
-                Copie totali:
-                <span class="font-semibold">{{ book.total_copies_count || '-' }}</span>
-              </p>
-              <p>
-                Copie prestate:
-                <span class="font-semibold">{{ book.borrowed_copies_count || '-' }}</span>
-              </p>
-              <p>
-                Copie disponibili:
-                <span class="font-semibold">{{ book.available_copies_count || '-' }}</span>
-              </p>
+        <div v-if="book" class="w-full flex gap-5 mt-6 border border-slate-300 bg-white p-6">
+          <div class="w-100">
+            <img
+              v-if="book.cover"
+              :src="book.cover"
+              :alt="`Copertina di ${book.title}`"
+              class="min-h-70  border border-[#242820]/25 bg-[#64704a] object-contain sm:min-h-[28rem]"
+            />
+
+            <div
+              v-else
+              role="img"
+              :aria-label="`Segnaposto della copertina di ${book.title}; immagine non disponibile`"
+              class="flex min-h-70 flex-col items-center justify-center border border-[#242820]/25 bg-[#64704a] p-8 text-center text-[#f5f1e8] sm:min-h-[28rem]"
+            >
+              <svg viewBox="0 0 24 24" fill="none" class="mb-6 size-16" aria-hidden="true">
+                <path
+                  d="M12 6.5C9.5 4.8 6.4 4.5 3 5.5v13c3.4-1 6.5-.7 9 1 2.5-1.7 5.6-2 9-1v-13c-3.4-1-6.5-.7-9 1Zm0 0v13"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+              </svg>
+              <span class="font-serif text-2xl italic">{{ book.title }}</span>
+              <span
+                class="mt-5 border border-[#f5f1e8]/40 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.16em]"
+              >
+                Copertina non disponibile
+              </span>
             </div>
           </div>
 
-          <div class="mt-6 border border-slate-300 bg-white p-6">
-            <h2 class="text-lg font-semibold text-slate-900 capitalize">Autori</h2>
-            <div class="flex gap-5 mt-3 text-sm text-slate-600">
-              <div v-for="author in book.authors" :key="author.id">
-                <p class="font-semibold border px-2">
-                  {{ author.name }}
+          <div class="w-full">
+            <h2 class="text-lg font-semibold text-slate-900 capitalize">{{ book.title }}</h2>
+            <div class="flex gap-50 mt-3 text-sm text-slate-600">
+              <div>
+                <p>
+                  Isbn: <span class="font-semibold">{{ book.isbn || '-' }}</span>
+                </p>
+                <p>
+                  Categoria:
+                  <span class="font-semibold">{{ book.category.name || '-' }}</span>
+                </p>
+                <p>
+                  Autori:
+                  <span class="font-semibold">{{ book.authors?.length }}</span>
+                </p>
+                <p>
+                  Editore:
+                  <span class="font-semibold">{{ book.publisher?.name }}</span>
                 </p>
               </div>
+              <div class="flex flex-col">
+                <p>
+                  Anno di pubblicazione:
+                  <span class="font-semibold">{{ book.published_year || '-' }}</span>
+                </p>
+              </div>
+              <div>
+                <p>
+                  Copie totali:
+                  <span class="font-semibold">{{ book.total_copies_count || '-' }}</span>
+                </p>
+                <p>
+                  Copie prestate:
+                  <span class="font-semibold">{{ book.borrowed_copies_count || '-' }}</span>
+                </p>
+                <p>
+                  Copie disponibili:
+                  <span class="font-semibold">{{ book.available_copies_count || '-' }}</span>
+                </p>
+              </div>
+            </div>
 
-              <div v-if="book.authors.length === 0">
-                <p class="font-semibold">Nessun autore disponibile.</p>
+            <div class="mt-6 border border-slate-300 bg-white p-6">
+              <h2 class="text-lg font-semibold text-slate-900 capitalize">Autori</h2>
+              <div class="flex gap-5 mt-3 text-sm text-slate-600">
+                <div v-for="author in book.authors" :key="author.id">
+                  <p class="font-semibold border px-2">
+                    {{ author.name }}
+                  </p>
+                </div>
+
+                <div v-if="book.authors.length === 0">
+                  <p class="font-semibold">Nessun autore disponibile.</p>
+                </div>
               </div>
             </div>
           </div>

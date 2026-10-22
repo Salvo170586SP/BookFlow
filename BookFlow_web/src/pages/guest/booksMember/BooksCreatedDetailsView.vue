@@ -107,7 +107,14 @@ watch(() => route.params.id, load, { immediate: true })
           </div>
 
           <div class="grid gap-5 lg:grid-cols-[minmax(15rem,0.8fr)_1.5fr]">
+            <img
+              v-if="book.cover"
+              :src="book.cover"
+              :alt="`Copertina di ${book.title}`"
+              class="min-h-80 w-full border border-[#242820]/25 bg-[#64704a] object-contain sm:min-h-[28rem]"
+            />
             <div
+              v-else
               role="img"
               :aria-label="`Segnaposto della copertina di ${book.title}; immagine non disponibile`"
               class="flex min-h-80 flex-col items-center justify-center border border-[#242820]/25 bg-[#64704a] p-8 text-center text-[#f5f1e8] sm:min-h-[28rem]"
