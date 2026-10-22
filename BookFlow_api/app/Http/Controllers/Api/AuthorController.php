@@ -8,6 +8,7 @@ use App\Http\Requests\AuthorIndexRequest;
 use App\Http\Resources\AuthorResource;
 use App\Models\Author;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -24,7 +25,7 @@ class AuthorController extends Controller
                 $term = '%' . addcslashes($search, '%_\\') . '%';
                 $query->where('name', 'like', $term);
             })
-            ->orderBy('name')
+            ->orderByDesc('updated_at')
             ->orderBy('id')
             ->paginate(10);
 
@@ -46,7 +47,7 @@ class AuthorController extends Controller
 
     private function bookVisibility(Request $request): Closure
     {
-        return function (Builder $query) use ($request): void {
+        return function (BelongsToMany $query) use ($request): void {
             if ($request->user()?->hasRole('member')) {
                 $query->hasAvailableCopy();
             }

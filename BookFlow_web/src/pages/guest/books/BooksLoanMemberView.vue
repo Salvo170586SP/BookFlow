@@ -6,6 +6,7 @@ import type { Book, BookCopy } from '@/types/book'
 import { computed, watch, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import ReviewModal from '@/components/ReviewModal.vue'
 
 const route = useRoute()
 const auth = useAuthStore()
@@ -16,7 +17,9 @@ const dueAt = ref(defaultDueDate())
 const loading = ref(false)
 const submitting = ref(false)
 const error = ref<string | null>(null)
-const success = ref<string | null>(null)
+const successModalOpen = ref(false)
+const successConfirm = ref(false)
+const reservation = ref<{ dueAt: string; barcode: string } | null>(null)
 
 const bookId = computed(() => Number(route.params.id))
 let lastRequest = 0
@@ -32,11 +35,17 @@ function formatLocalDate(date: Date): string {
   return new Date(date.getTime() - offset * 60_000).toISOString().slice(0, 10)
 }
 
+function formatDueDate(value: string): string {
+  const [year, month, day] = value.slice(0, 10).split('-').map(Number)
+  return new Intl.DateTimeFormat('it-IT').format(new Date(year, month - 1, day))
+}
+
 async function load(): Promise<void> {
   const requestId = ++lastRequest
   loading.value = true
   error.value = null
-  success.value = null
+  reservation.value = null
+  successModalOpen.value = false
 
   if (!Number.isInteger(bookId.value) || bookId.value < 1) {
     error.value = 'ID libro non valido.'
@@ -72,7 +81,6 @@ async function addLoan(): Promise<void> {
 
   submitting.value = true
   error.value = null
-  success.value = null
 
   try {
     const loan = await createMemberLoan(memberId, {
@@ -81,7 +89,9 @@ async function addLoan(): Promise<void> {
     })
     copies.value = copies.value.filter((copy) => copy.id !== loan.copy.id)
     selectedBook.available_copies_count = Math.max(selectedBook.available_copies_count - 1, 0)
-    success.value = `Prenotazione confermata. Ti è stata assegnata la copia ${loan.copy.barcode}.`
+    reservation.value = { dueAt: loan.due_at, barcode: loan.copy.barcode }
+    successModalOpen.value = true
+    successConfirm.value = true
   } catch {
     error.value =
       'Impossibile prenotare il libro: le copie potrebbero essere state assegnate nel frattempo. Riprova.'
@@ -131,13 +141,6 @@ watch(bookId, load, { immediate: true })
         >
           {{ error }}
         </p>
-        <p
-          v-if="success"
-          role="status"
-          class="mb-6 border border-[#64704a]/40 bg-[#64704a]/10 p-5 font-medium text-[#414a30]"
-        >
-          {{ success }}
-        </p>
 
         <div v-if="book">
           <p class="text-xs font-bold uppercase tracking-[0.16em] text-[#64704a]">
@@ -149,12 +152,15 @@ watch(bookId, load, { immediate: true })
             Prenota
             <span class="font-serif font-normal italic text-[#d45b3e]">{{ book.title }}</span>
           </h1>
-          <p class="mt-4 max-w-2xl leading-7 text-[#65675e]">
+          <p class="mt-4 leading-7 text-[#65675e]">
             Ti assegneremo automaticamente una copia disponibile. Non serve scegliere il codice
             della copia.
           </p>
 
-          <section class="mt-8 border border-[#242820]/25 bg-[#e8dfcd] p-5 sm:p-7">
+          <section
+            v-if="!successConfirm"
+            class="mt-8 border border-[#242820]/25 bg-[#e8dfcd] p-5 sm:p-7"
+          >
             <div class="mb-5 flex items-center justify-between border-b border-[#242820]/25 pb-4">
               <h2 class="text-xs font-bold uppercase tracking-[0.18em]">La tua prenotazione</h2>
               <span class="text-xs font-bold text-[#64704a]">BookFlow / Soci</span>
@@ -167,7 +173,9 @@ watch(bookId, load, { immediate: true })
               ></span>
               {{
                 copies.length > 0
-                  ? `${copies.length} ${copies.length === 1 ? 'copia disponibile' : 'copie disponibili'}`
+                  ? `${copies.length} ${
+                      copies.length === 1 ? 'copia disponibile' : 'copie disponibili'
+                    }`
                   : 'Al momento non ci sono copie disponibili.'
               }}
             </p>
@@ -199,8 +207,43 @@ watch(bookId, load, { immediate: true })
               </button>
             </form>
           </section>
+
+          <section
+            v-if="successConfirm"
+            class="mt-8 border border-[#242820]/25 bg-[#e8dfcd] p-5 sm:p-7"
+          >
+            Prenotazione confermata! Torna al
+            <RouterLink
+              to="/books"
+              class="text-sm font-bold transition-colors hover:border-[#d45b3e] hover:text-[#d45b3e]"
+            >
+              Catalogo
+            </RouterLink>
+          </section>
         </div>
       </section>
+      <ReviewModal v-model="successModalOpen">
+        <p class="mb-5 font-medium text-sm text-center">
+          IMPORTANTE: Ti invitiamo a stampare la riceviuta che ti abbiamo inviato al tuo indirizzo
+          email e consegnarla al momento del ritiro
+        </p>
+        <div class="text-center">
+          <p>
+            La prenotazione di
+            <span class="font-bold text-[#242820]">{{ book.title }}</span>
+            è andata a buon fine.
+          </p>
+          <p class="mt-3">
+            Dovrai restituire il libro entro il
+            <span class="font-bold text-[#242820]">
+              {{ reservation ? formatDueDate(reservation.dueAt) : '' }} </span
+            >.
+          </p>
+          <p v-if="reservation" class="mt-3 text-sm">
+            Copia assegnata: <span class="font-semibold">{{ reservation.barcode }}</span>
+          </p>
+        </div>
+      </ReviewModal>
     </main>
   </div>
 </template>

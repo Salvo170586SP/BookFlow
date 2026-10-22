@@ -29,6 +29,7 @@ import BooksLoanMemberView from '@/pages/guest/books/BooksLoanMemberView.vue'
 import LoansBooksView from '@/pages/guest/loansBooks/LoansBooksView.vue'
 import AddBookMemberView from '@/pages/guest/booksMember/AddBookMemberView.vue'
 import BooksCreatedMemberView from '@/pages/guest/booksMember/BooksCreatedMemberView.vue'
+import BooksCreatedDetailsView from '@/pages/guest/booksMember/BooksCreatedDetailsView.vue'
   
 declare module 'vue-router' {
   interface RouteMeta {
@@ -62,6 +63,7 @@ const router = createRouter({
         { path: '/loans-books', name: 'MemberLoansBooks', component: LoansBooksView },
         { path: '/add-books', name: 'MemberAddBooks', component: AddBookMemberView },
         { path: '/books-created', name: 'MemberBooksCreated', component: BooksCreatedMemberView },
+        { path: '/books-created/:id/details', name: 'MemberBooksCreatedDetails', component: BooksCreatedDetailsView },
       ],
     },
     {

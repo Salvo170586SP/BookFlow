@@ -12,6 +12,7 @@ interface UpdatePayload {
 
 interface CreatedLoan {
   id: number
+  due_at: string
   copy: {
     id: number
     barcode: string

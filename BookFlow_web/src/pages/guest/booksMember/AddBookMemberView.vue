@@ -138,8 +138,7 @@ async function submit() {
           ])
         )
       } else {
-        formError.value =
-          error.response?.data?.message ?? 'Impossibile salvare il libro. Riprova.'
+        formError.value = error.response?.data?.message ?? 'Impossibile salvare il libro. Riprova.'
       }
     } else {
       formError.value = 'Impossibile salvare il libro. Riprova.'
@@ -250,10 +249,36 @@ async function submit() {
             </label>
             <span v-if="errors.isbn" class="text-sm text-[#8d3827]">{{ errors.isbn }}</span>
 
-            <label class="flex items-center gap-2 text-sm">
-              <input v-model="manualPublisher" type="checkbox" @change="togglePublisherMode" />
-              <span>Inserisci l'editore manualmente</span>
-            </label>
+            <div class="flex items-end gap-3">
+              <label
+                id="manualPublisher"
+                class="flex items-center justify-center text-sm w-7 h-7 cursor-pointer border border-[#242820]/25 transition-colors"
+                :class="manualPublisher ? 'bg-emerald-500' : 'bg-white hover:bg-emerald-300'"
+              >
+                <input
+                  v-model="manualPublisher"
+                  class="hidden"
+                  id="manualPublisher"
+                  type="checkbox"
+                  @change="togglePublisherMode"
+                />
+                <svg
+                  v-if="manualPublisher"
+                  class="w-5 h-5 text-white"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 10.5l4 4 8-9" />
+                </svg>
+              </label>
+              <div class="font-medium text">Clicca qui se l'editore non è in lista</div>
+            </div>
+
             <label v-if="!manualPublisher" for="publisher_id" class="flex flex-col gap-2">
               <span class="text-xs font-bold uppercase tracking-[0.12em] text-[#65675e]"
                 >Editore</span
@@ -354,14 +379,39 @@ async function submit() {
           </div>
 
           <div class="flex flex-col">
-            <label class="mb-4 flex items-center gap-2 text-sm">
-              <input v-model="manualAuthor" type="checkbox" @change="toggleAuthorMode" />
-              <span>Inserisci l'autore manualmente</span>
-            </label>
+            <div class="flex items-end gap-3 mb-5">
+              <label
+                id="manualAuthor"
+                class="flex items-center justify-center text-sm w-7 h-7 cursor-pointer border border-[#242820]/25 transition-colors"
+                :class="manualAuthor ? 'bg-emerald-500' : 'bg-white hover:bg-emerald-300'"
+              >
+                <input
+                  v-model="manualAuthor"
+                  class="hidden"
+                  type="checkbox"
+                  @change="toggleAuthorMode"
+                />
+                <svg
+                  v-if="manualAuthor"
+                  class="w-5 h-5 text-white"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 10.5l4 4 8-9" />
+                </svg>
+              </label>
+              <div class="font-medium text">Clicca qui se l'autore non è in lista</div>
+            </div>
+
             <template v-if="!manualAuthor">
               <label for="author-search" class="flex flex-col gap-2">
                 <span class="text-xs font-bold uppercase tracking-[0.12em] text-[#65675e]"
-                  >Autori (facoltativo)</span
+                  >Autori</span
                 >
                 <input
                   id="author-search"
@@ -400,9 +450,9 @@ async function submit() {
               </button>
               <div class="mt-4">
                 <span id="authors-help" class="text-sm leading-6 text-[#65675e]">
-                  Puoi lasciare il campo vuoto. Cerca per nome e seleziona uno o più autori (Ctrl/Cmd
-                  + clic). Gli autori già selezionati restano visibili anche quando non corrispondono
-                  alla ricerca.
+                  Puoi lasciare il campo vuoto. Cerca per nome e seleziona uno o più autori
+                  (Ctrl/Cmd + clic). Gli autori già selezionati restano visibili anche quando non
+                  corrispondono alla ricerca.
                 </span>
                 <span v-if="authorValidationError" class="mt-2 block text-sm text-[#8d3827]">{{
                   authorValidationError

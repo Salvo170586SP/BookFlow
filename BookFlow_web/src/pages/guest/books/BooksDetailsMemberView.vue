@@ -16,7 +16,7 @@ const book = ref<Book | null>(null)
 const myActiveLoan = computed(() => {
   for (const copy of book.value?.copies ?? []) {
     const loan = copy.loans?.find(
-      (loan) => loan.user_id === auth.user?.id && loan.returned_at == null,
+      (loan) => loan.user_id === auth.user?.id && loan.returned_at == null
     )
     if (loan) return loan
   }
@@ -27,7 +27,7 @@ const isBookInMyPossession = computed(() => myActiveLoan.value !== null)
 const formattedDueDate = computed(() =>
   myActiveLoan.value
     ? new Intl.DateTimeFormat('it-IT').format(new Date(myActiveLoan.value.due_at))
-    : '',
+    : ''
 )
 
 let requestId = 0
@@ -101,7 +101,8 @@ watch(() => route.params.id, load, { immediate: true })
             >
               {{ book.title }}<span class="font-serif font-normal italic text-[#d45b3e]">.</span>
             </h1>
-            <p class="mt-4 text-lg text-[#65675e]">
+            <p class="mt-4 font-medium text-[#65675e]">
+              <span class="font-medium italic">Autore:</span>
               {{ book.authors.map((author) => author.name).join(', ') || 'Autore non indicato' }}
             </p>
           </div>
@@ -222,20 +223,6 @@ watch(() => route.params.id, load, { immediate: true })
               </section>
             </div>
           </div>
-
-          <section class="mt-5 border border-[#242820]/25 bg-[#e8dfcd] p-5 sm:p-7">
-            <h2 class="text-xs font-bold uppercase tracking-[0.18em]">Autori</h2>
-            <div v-if="book.authors.length > 0" class="mt-4 flex flex-wrap gap-2">
-              <span
-                v-for="author in book.authors"
-                :key="author.id"
-                class="border border-[#242820]/20 bg-[#f5f1e8] px-3 py-2 text-sm font-semibold"
-              >
-                {{ author.name }}
-              </span>
-            </div>
-            <p v-else class="mt-3 text-sm text-[#65675e]">Nessun autore indicato.</p>
-          </section>
 
           <section class="mt-5 border border-[#242820]/25 bg-[#ede7da] p-5 sm:p-7">
             <h2 class="text-xs font-bold uppercase tracking-[0.18em]">Descrizione</h2>

@@ -50,7 +50,7 @@ class BookController extends Controller
                 fn(Builder $query) => $query->where('published_year', $filters['published_year'])
             )
             // Ordine stabile: il secondo criterio (id) evita doppioni o salti tra una pagina e l'altra
-            ->orderBy('title')
+            ->orderByDesc('updated_at')
             ->orderBy('id')
             ->paginate($perPage)
             ->withQueryString();
@@ -77,18 +77,6 @@ class BookController extends Controller
 
     public function show(Request $request, Book $book): BookResource
     {
-        $user = $request->user();
-        if (
-            $user?->hasRole('member')
-            && $book->member_id !== $user->getKey()
-            && ! Book::query()
-                ->hasAvailableCopy()
-                ->whereKey($book->getKey())
-                ->exists()
-        ) {
-            abort(404);
-        }
-
         return new BookResource(
             $book->load([
                 'publisher:id,name',

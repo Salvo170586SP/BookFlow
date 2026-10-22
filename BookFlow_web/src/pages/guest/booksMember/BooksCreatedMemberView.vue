@@ -130,7 +130,7 @@ onMounted(() => {
               </div>
 
               <RouterLink
-                :to="`/books/${book.id}/details`"
+                :to="`/books-created/${book.id}/details`"
                 class="mt-auto flex items-center justify-between border border-[#d45b3e]/40 bg-[#d45b3e]/10 px-4 py-2.5 text-sm font-bold transition-colors hover:bg-[#d45b3e]/20"
               >
                 Scopri il libro
