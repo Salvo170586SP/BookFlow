@@ -124,9 +124,10 @@ npm run build
 
 ## Immagini
 
-Gli screenshot dell'interfaccia sono salvati in `docs/screenshots/`. Per visualizzarli, usa la sintassi Markdown direttamente nel README, senza racchiuderla in un blocco di codice:
-
 ![Schermata home](./docs/screenshots/home-guest.png)
+![Schermata login](./docs/screenshots/login.png)
+![Schermata admin](./docs/screenshots/admin.png)
+![Schermata guest](./docs/screenshots/guest.png)
 
 Le copertine dei libri caricate dall'applicazione vengono salvate sul disco pubblico di Laravel; `artisan storage:link` crea il collegamento necessario per servirle.
 
