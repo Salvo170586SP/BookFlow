@@ -127,6 +127,7 @@ npm run build
 Il repository non include screenshot dell'interfaccia. Per aggiungerli, salva le immagini, ad esempio, in `docs/screenshots/` e inseriscile nel README con percorsi relativi:
 
 ```markdown
+![Schermata home](./docs/screenshots/home-guest.png)
 ![Schermata di accesso](./docs/screenshots/login.png)
 ![Catalogo dei libri](./docs/screenshots/catalogo.png)
 ![Dashboard amministratore](./docs/screenshots/dashboard-admin.png)
