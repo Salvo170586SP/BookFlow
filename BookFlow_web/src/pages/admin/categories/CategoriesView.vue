@@ -62,13 +62,13 @@ watch(page, load, { immediate: true })
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Categorie</h1>
         <RouterLink
           to="/admin/categories/create"
-          class="bg-green-400 hover:bg-green-500 text-white font-semibold px-3 py-1 border border-slate-300"
+          class="border border-[#64704a] bg-[#64704a] px-10 py-1 text-lg font-medium text-[#f5f1e8] transition hover:bg-[#4f5b39]"
           >Crea</RouterLink
         >
       </div>
@@ -77,17 +77,17 @@ watch(page, load, { immediate: true })
         {{ error }}
       </p>
 
-      <LoaderComponent v-if="loading && categories.length === 0" />
+      <LoaderComponent v-if="loading && categories.length === 0" admin-theme />
 
       <section v-else class="mt-10">
-        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
+        <PaginationComponent :meta="meta" :loading="loading" admin-theme @change="goToPage" />
 
         <div
           class="mt-3 overflow-x-auto border border-slate-300 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
-            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <thead class="text-xs font-semibold uppercase tracking-wide">
               <tr>
                 <th class="px-4 py-3 w-80">Nome</th>
                 <th class="px-4 py-3">Libri</th>
@@ -97,19 +97,31 @@ watch(page, load, { immediate: true })
 
             <tbody class="divide-y divide-slate-100">
               <tr v-for="category in categories" :key="category.id">
-                <td class="px-4 py-3 font-medium text-slate-900">{{ category.name }}</td>
-                <td class="px-4 py-3 text-slate-600">{{ category.books_count }}</td>
+                <td class="px-4 py-3 font-medium text-slate-900">
+                  <span
+                    class="inline-flex px-3 py-1 items-center justify-center rounded-lg bg-green-700/80 font-semibold text-[#f5f1e8]"
+                  >
+                    {{ category.name }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-slate-600">
+                  <span
+                    class="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-[#64704a] font-semibold text-[#f5f1e8]"
+                  >
+                    {{ category.books_count }}
+                  </span>
+                </td>
                 <td class="px-4 py-3 text-slate-600">
                   <div class="text-end space-x-3">
                     <RouterLink
                       :to="`/admin/categories/edit/${category.id}`"
-                      class="hover:bg-gray-200 text-blue-700 cursor-pointer px-3 py-1 border border-blue-300 font-medium"
+                      class="cursor-pointer border border-[#64704a]/60 px-3 py-1 font-medium text-[#4f5b39] transition hover:bg-[#e8dfcd]"
                     >
                       Modifica
                     </RouterLink>
                     <button
                       @click="() => deleteCategory(category.id)"
-                      class="hover:bg-gray-200 text-red-700 cursor-pointer px-3 py-1 border border-red-300 font-medium"
+                      class="cursor-pointer border border-[#8d3827]/50 px-3 py-1 font-medium text-[#8d3827] transition hover:bg-[#f5e4de]"
                     >
                       Elimina
                     </button>
@@ -126,7 +138,7 @@ watch(page, load, { immediate: true })
           </table>
         </div>
 
-        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
+        <PaginationComponent :meta="meta" :loading="loading" admin-theme @change="goToPage" />
       </section>
     </main>
   </div>

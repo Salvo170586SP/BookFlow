@@ -129,7 +129,7 @@ watch(bookId, load, { immediate: true })
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <div class="space-y-5">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">
@@ -137,7 +137,7 @@ watch(bookId, load, { immediate: true })
         </h1>
         <RouterLink
           to="/admin/books"
-          class="border border-gray-300 font-semibold w-32 text-center px-3 bg-gray-50 hover:bg-gray-200 text-black"
+          class="w-32 border border-[#242820]/25 bg-[#fffdf8] px-3 text-center font-semibold text-[#242820] transition hover:bg-[#ede7da]"
         >
           Indietro
         </RouterLink>
@@ -146,11 +146,14 @@ watch(bookId, load, { immediate: true })
       <p v-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ error }}
       </p>
-      <p v-if="success" class="mt-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
+      <p
+        v-if="success"
+        class="mt-6 rounded-lg border border-[#64704a]/25 bg-[#e8dfcd] px-4 py-3 text-sm text-[#4f5b39]"
+      >
         {{ success }}
       </p>
 
-      <p v-if="loading" class="mt-6 text-slate-600">Caricamento copie…</p>
+      <p v-if="loading" class="mt-6 text-[#55594e]">Caricamento copie…</p>
 
       <section v-else-if="book" class="mt-6">
         <h2 class="mb-3 text-lg font-semibold text-slate-900">
@@ -184,7 +187,7 @@ watch(bookId, load, { immediate: true })
 
         <div class="overflow-x-auto border border-slate-300 bg-white">
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
-            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <thead class="text-xs font-semibold uppercase tracking-wide">
               <tr>
                 <th class="px-4 py-3">Barcode</th>
                 <th class="px-4 py-3">Stato</th>
@@ -210,7 +213,7 @@ watch(bookId, load, { immediate: true })
                   <div class="flex justify-end gap-2">
                     <button
                       type="button"
-                      class="border border-blue-500 px-3 py-1 text-blue-500 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      class="border border-[#64704a] px-3 py-1 text-[#4f5b39] transition hover:bg-[#ede7da] disabled:cursor-not-allowed disabled:opacity-50"
                       :disabled="
                         updatingCopyId !== null || draftStatuses[copy.id] === copy.status
                       "
@@ -220,7 +223,7 @@ watch(bookId, load, { immediate: true })
                     </button>
                     <button
                       type="button"
-                      class="border border-red-500 text-red-500 px-3 py-1 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      class="border border-[#8d3827] px-3 py-1 text-[#8d3827] transition hover:bg-[#f5e4de] disabled:cursor-not-allowed disabled:opacity-50"
                       :disabled="deleting || updatingCopyId !== null"
                       @click="askDelete(copy)"
                     >

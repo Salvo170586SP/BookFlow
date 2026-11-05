@@ -50,7 +50,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <div class="space-y-5">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">
@@ -58,7 +58,7 @@ onMounted(async () => {
         </h1>
         <RouterLink
           :to="`/admin/books`"
-          class="border border-gray-300 font-semibold w-32 text-center px-3 bg-gray-50 hover:bg-gray-200 text-black"
+          class="w-32 border border-[#242820]/25 bg-[#fffdf8] px-3 text-center font-semibold text-[#242820] transition hover:bg-[#ede7da]"
           >Indietro</RouterLink
         >
       </div>
@@ -66,7 +66,10 @@ onMounted(async () => {
       <p v-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ error }}
       </p>
-      <p v-if="success" class="mt-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
+      <p
+        v-if="success"
+        class="mt-6 rounded-lg border border-[#64704a]/25 bg-[#e8dfcd] px-4 py-3 text-sm text-[#4f5b39]"
+      >
         {{ success }}
       </p>
 
@@ -95,13 +98,13 @@ onMounted(async () => {
                 form.quantity < 1 ||
                 form.quantity > 1000
               "
-              class="border border-green-700 bg-green-600 px-4 py-2 text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+              class="border border-[#64704a] bg-[#64704a] px-4 py-2 text-[#f5f1e8] transition hover:bg-[#4f5b39] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {{ submitting ? 'Caricamento…' : 'Crea copie' }}
             </button>
             <button
               type="button"
-              class="border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100"
+              class="border border-[#242820]/25 px-4 py-2 text-[#55594e] transition hover:bg-[#ede7da]"
             >
               Annulla
             </button>

@@ -82,20 +82,25 @@ watch(() => route.params.id, load, { immediate: true })
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Dettagli Membro</h1>
-        <RouterLink to="/admin/members">Indietro</RouterLink>
+        <RouterLink
+          to="/admin/members"
+          class="border border-[#242820]/25 px-3 py-1 font-semibold transition hover:bg-[#ede7da]"
+        >
+          Indietro
+        </RouterLink>
       </div>
 
-      <LoaderComponent v-if="loading" />
+      <LoaderComponent v-if="loading" admin-theme />
 
       <p v-else-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ error }}
       </p>
 
-      <section v-if="member" class="mt-6 border border-slate-300 bg-white p-6">
+      <section v-if="member" class="mt-6 border border-[#242820]/20 bg-[#fffdf8] p-6">
         <h2 class="text-lg font-semibold text-slate-900 capitalize">{{ member.name }}</h2>
         <div class="flex gap-50 mt-3 text-sm text-slate-600">
           <div>
@@ -125,14 +130,14 @@ watch(() => route.params.id, load, { immediate: true })
         </div>
       </section>
 
-      <section v-else class="mt-6 border border-slate-300 bg-white p-6">
+      <section v-else class="mt-6 border border-[#242820]/20 bg-[#fffdf8] p-6">
         <p class="text-sm text-slate-600">Autore non trovato.</p>
       </section>
 
-      <section v-if="member" class="mt-6 border border-slate-300 bg-white p-6">
-        <div class="flex justify-between mb-5">
+      <section v-if="member" class="mt-6 border border-[#242820]/20 bg-[#fffdf8] p-6">
+        <div class="mb-5 flex justify-between">
           <p class="text-lg font-semibold text-slate-900">Libri in prestito</p>
-          <RouterLink class="border border-gray-300 px-3 bg-gray-50 text-gray-500 hover:bg-gray-100" to="/admin/books"
+          <RouterLink class="border border-[#242820]/25 bg-[#fffdf8] px-3 text-[#55594e] transition hover:bg-[#ede7da]" to="/admin/books"
             >Prenota</RouterLink
           >
         </div>
@@ -141,7 +146,7 @@ watch(() => route.params.id, load, { immediate: true })
           <table
             class="min-w-full divide-y divide-slate-200 text-left text-sm border border-slate-300"
           >
-            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <thead             class="text-xs font-semibold uppercase tracking-wide">
               <tr>
                 <th class="px-4 py-3">Libro</th>
                 <th class="px-4 py-3 w-80">BarCode</th>
@@ -161,7 +166,7 @@ watch(() => route.params.id, load, { immediate: true })
                   <div class="text-end space-x-3">
                     <button
                       @click="askDelete(loan)"
-                      class="bg-red-50 hover:bg-red-100 text-red-500 border border-red-300 cursor-pointer px-3 py-1"
+                      class="cursor-pointer border border-[#8d3827]/50 bg-[#f5e4de] px-3 py-1 text-[#8d3827] transition hover:bg-[#efd4ca]"
                     >
                       Elimina
                     </button>

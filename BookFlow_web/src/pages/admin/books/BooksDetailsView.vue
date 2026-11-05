@@ -73,25 +73,25 @@ watch(() => route.params.id, load, { immediate: true })
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <h1 class="text-2xl font-bold tracking-tight text-slate-900 pb-7">
         Dettagli di <span v-if="book">{{ book.title }}</span>
       </h1>
       <RouterLink
         :to="`/admin/books`"
-        class="border border-gray-300 font-semibold w-32 text-center px-3 bg-gray-50 hover:bg-gray-200 text-black"
+        class="w-32 border border-[#242820]/25 bg-[#fffdf8] px-3 text-center font-semibold text-[#242820] transition hover:bg-[#ede7da]"
         >Indietro</RouterLink
       >
 
-      <LoaderComponent v-if="loading" />
+      <LoaderComponent v-if="loading" admin-theme />
 
       <section v-else>
         <p v-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
           {{ error }}
         </p>
 
-        <div v-if="book" class="w-full flex gap-5 mt-6 border border-slate-300 bg-white p-6">
+        <div v-if="book" class="mt-6 flex w-full gap-5 border border-[#242820]/20 bg-[#fffdf8] p-6">
           <div class="w-100">
             <img
               v-if="book.cover"
@@ -164,7 +164,7 @@ watch(() => route.params.id, load, { immediate: true })
               </div>
             </div>
 
-            <div class="mt-6 border border-slate-300 bg-white p-6">
+            <div class="mt-6 border border-[#242820]/20 bg-[#fffdf8] p-6">
               <h2 class="text-lg font-semibold text-slate-900 capitalize">Autori</h2>
               <div class="flex gap-5 mt-3 text-sm text-slate-600">
                 <div v-for="author in book.authors" :key="author.id">
@@ -181,14 +181,14 @@ watch(() => route.params.id, load, { immediate: true })
           </div>
         </div>
 
-        <div v-if="book" class="mt-6 border border-slate-300 bg-white p-6">
+        <div v-if="book" class="mt-6 border border-[#242820]/20 bg-[#fffdf8] p-6">
           <h2 class="text-lg font-semibold text-slate-900">
             Copie prestate {{ book.borrowed_copies_count }}
           </h2>
 
           <div
             v-if="loanedCopies.length === 0"
-            class="mt-3 rounded border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"
+            class="mt-3 rounded border border-[#242820]/15 bg-[#f5f1e8] px-4 py-3 text-sm text-[#55594e]"
           >
             Nessuna copia attualmente in prestito.
           </div>
@@ -197,24 +197,22 @@ watch(() => route.params.id, load, { immediate: true })
             <div
               v-for="copy in loanedCopies"
               :key="copy.id"
-              class="overflow-hidden rounded border border-slate-300 bg-slate-50"
+              class="overflow-hidden rounded border border-[#242820]/20 bg-[#f5f1e8]"
             >
               <div class="flex items-center justify-between gap-3 px-4 py-3">
                 <span class="font-medium text-slate-800">{{ copy.barcode }}</span>
                 <button
                   type="button"
-                  class="bg-slate-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800"
+                  class="bg-[#64704a] px-3 py-1.5 text-sm font-medium text-[#f5f1e8] transition hover:bg-[#4f5b39]"
                   @click="toggleCopyDetails(copy.id)"
                 >
                   {{ isCopyExpanded(copy.id) ? 'Nascondi' : 'Mostra' }} membri
                 </button>
               </div>
 
-              <div v-if="isCopyExpanded(copy.id)" class="border-t border-slate-300 bg-white p-3">
+              <div v-if="isCopyExpanded(copy.id)" class="border-t border-[#242820]/20 bg-[#fffdf8] p-3">
                 <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
-                  <thead
-                    class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500"
-                  >
+                  <thead class="text-xs font-semibold uppercase tracking-wide">
                     <tr>
                       <th class="px-4 py-3">Membro</th>
                       <th class="px-4 py-3 w-80">Email</th>

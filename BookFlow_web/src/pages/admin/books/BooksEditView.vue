@@ -47,6 +47,7 @@ const authorValidationError = computed(
 const form = ref({
   title: '',
   isbn: '',
+  cover: null as File | null,
   description: '',
   published_year: '',
   publisher_id: '',
@@ -97,6 +98,12 @@ async function loadOptions() {
   await Promise.all([loadCategories(), loadPublishers(), loadAuthors()])
 }
 
+function selectCover(event: Event) {
+  const input = event.target as HTMLInputElement
+  form.value.cover = input.files?.[0] ?? null
+  delete errors.value.cover
+}
+
 onMounted(async () => {
   loadingBook.value = true
 
@@ -109,6 +116,7 @@ onMounted(async () => {
     form.value = {
       title: currentBook.title,
       isbn: currentBook.isbn,
+      cover: null,
       description: currentBook.description ?? '',
       published_year: currentBook.published_year != null ? String(currentBook.published_year) : '',
       publisher_id: currentBook.publisher?.id ? String(currentBook.publisher.id) : '',
@@ -144,28 +152,66 @@ async function submit() {
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <div class="flex items-center justify-between mb-20">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">
           Modifica libro{{ book ? `: ${book.title}` : '' }}
         </h1>
-        <RouterLink to="/admin/books" class="font-semibold">Indietro</RouterLink>
+        <RouterLink
+          to="/admin/books"
+          class="border border-[#242820]/25 px-3 py-1 font-semibold transition hover:bg-[#ede7da]"
+          >Indietro</RouterLink
+        >
       </div>
 
       <p v-if="formError" class="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ formError }}
       </p>
 
-      <LoaderComponent v-if="loadingBook" />
+      <LoaderComponent v-if="loadingBook" admin-theme />
 
       <form
         v-else
         @submit.prevent="submit"
-        class="w-full p-5 border border-slate-300 bg-white mx-auto"
+        class="mx-auto w-full border border-[#242820]/20 bg-[#fffdf8] p-5"
       >
         <div class="grid grid-cols-2 gap-5">
           <div>
+            <div class="mb-3">
+              <label for="cover" class="flex flex-col gap-2">
+                <span class="text-xs font-bold uppercase tracking-[0.12em] text-[#65675e]"
+                  >Immagine della copertina</span
+                >
+                <input
+                  type="file"
+                  id="cover"
+                  accept="image/jpeg,image/png,image/webp"
+                  aria-describedby="cover-help"
+                  @change="selectCover"
+                  class="border border-[#242820]/25 bg-[#f5f1e8] px-3 py-2.5 outline-none focus:border-[#d45b3e]"
+                />
+                <span id="cover-help" class="text-sm text-[#65675e]"
+                  >JPG, PNG o WebP, massimo 5 MB. Facoltativa.</span
+                >
+                <span v-if="form.cover" class="text-sm text-[#65675e]"
+                  >Nuovo file selezionato: {{ form.cover.name }}</span
+                >
+                <span v-if="errors.cover" class="text-sm text-[#8d3827]" role="alert">{{
+                  errors.cover[0]
+                }}</span>
+              </label>
+
+              <div v-if="book?.cover" class="mt-2 flex items-center gap-3">
+                <img
+                  :src="book.cover"
+                  :alt="`Copertina attuale di ${book.title}`"
+                  class="h-35 w-26 border border-[#242820]/20 object-cover"
+                />
+              </div>
+              <span class="text-sm text-[#65675e]">Copertina attuale</span>
+            </div>
+
             <label for="title" class="flex flex-col font-semibold mb-2">
               <span class="text-sm">Titolo*</span>
               <input
@@ -342,7 +388,7 @@ async function submit() {
               publishersError !== null ||
               publishers.length === 0
             "
-            class="bg-blue-400 hover:bg-blue-700 cursor-pointer border border-gray-300 px-3 py-1 text-white font-medium"
+            class="cursor-pointer border border-[#64704a] bg-[#64704a] px-3 py-1 font-medium text-[#f5f1e8] transition hover:bg-[#4f5b39] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {{ loading ? 'Salvataggio...' : 'Salva modifiche' }}
           </button>

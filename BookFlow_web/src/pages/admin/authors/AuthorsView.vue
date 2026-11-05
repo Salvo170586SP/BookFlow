@@ -71,7 +71,7 @@ watch(searchName, (_, __, onCleanup) => {
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Autori</h1>
@@ -81,10 +81,10 @@ watch(searchName, (_, __, onCleanup) => {
         {{ error }}
       </p>
 
-      <LoaderComponent v-if="loading && authors.length === 0" />
+      <LoaderComponent v-if="loading && authors.length === 0" admin-theme />
 
       <section v-else>
-        <label for="byName" class="flex flex-col mt-5">
+        <label for="byName" class="flex flex-col mt-5 font-medium w-100">
           Cerca 
           <input
             type="text"
@@ -95,14 +95,14 @@ watch(searchName, (_, __, onCleanup) => {
           />
         </label>
 
-        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
+        <PaginationComponent :meta="meta" :loading="loading" admin-theme @change="goToPage" />
 
         <div
           class="mt-3 overflow-x-auto border border-slate-300 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
-            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <thead class="text-xs font-semibold uppercase tracking-wide">
               <tr>
                 <th class="px-4 py-3 w-80">Nome</th>
                 <th class="px-4 py-3">Bio</th>
@@ -113,8 +113,8 @@ watch(searchName, (_, __, onCleanup) => {
 
             <tbody class="divide-y divide-slate-100">
               <tr v-for="author in authors" :key="author.id">
-                <td class="px-4 py-3 font-medium text-slate-900">{{ author.name }}</td>
-                <td class="px-4 py-3 text-slate-900">
+                <td class="px-4 py-3 font-medium">{{ author.name }}</td>
+                <td class="px-4 py-3">
                   {{
                     author.bio
                       ? author.bio.length > 20
@@ -123,17 +123,17 @@ watch(searchName, (_, __, onCleanup) => {
                       : ''
                   }}
                 </td>
-                <td class="px-4 py-3 font-medium text-slate-900 text-end">
+                <td class="px-4 py-3 font-medium text-end">
                   <span
-                    class="inline-flex w-6 h-6 bg-gray-200 items-center justify-center rounded-lg"
+                      class="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-[#64704a] font-semibold text-[#f5f1e8]"
                   >
                     {{ author.books.length }}
                   </span>
                 </td>
-                <td class="px-4 py-3 font-medium text-slate-900 text-end">
+                <td class="px-4 py-3 font-medium text-end">
                   <div>
                     <RouterLink
-                      class="border border-gray-400 px-3 py-1 hover:bg-gray-200 text-gray-700"
+                      class="border border-[#64704a]/60 px-3 py-1 text-[#4f5b39] transition hover:bg-[#e8dfcd]"
                       :to="`/admin/authors/${author.id}/details`"
                       >Dettagli</RouterLink
                     >
@@ -150,7 +150,7 @@ watch(searchName, (_, __, onCleanup) => {
           </table>
         </div>
 
-        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
+        <PaginationComponent :meta="meta" :loading="loading" admin-theme @change="goToPage" />
       </section>
     </main>
   </div>

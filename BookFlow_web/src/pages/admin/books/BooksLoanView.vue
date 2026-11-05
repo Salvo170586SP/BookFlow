@@ -138,12 +138,12 @@ watch([page, bookId], load, { immediate: true })
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
 
       <div class="space-y-3">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Presta libro</h1>
-        <RouterLink to="/admin/books" class="font-semibold border border-gray-300 px-3 hover:bg-gray-200">Indietro</RouterLink>
+        <RouterLink to="/admin/books" class="border border-[#242820]/25 px-3 py-1 font-semibold transition hover:bg-[#ede7da]">Indietro</RouterLink>
       </div>
 
       <p v-if="book" class="mt-2 text-slate-600">
@@ -153,7 +153,10 @@ watch([page, bookId], load, { immediate: true })
       <p v-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ error }}
       </p>
-      <p v-if="success" class="mt-6 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
+      <p
+        v-if="success"
+        class="mt-6 rounded-lg border border-[#64704a]/25 bg-[#e8dfcd] px-4 py-3 text-sm text-[#4f5b39]"
+      >
         {{ success }}
       </p>
       <p
@@ -163,7 +166,7 @@ watch([page, bookId], load, { immediate: true })
         Al momento non ci sono copie disponibili per questo libro.
       </p>
 
-      <LoaderComponent v-if="loading" />
+      <LoaderComponent v-if="loading" admin-theme />
 
       <section v-else>
         <div
@@ -171,7 +174,7 @@ watch([page, bookId], load, { immediate: true })
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
-            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <thead class="text-xs font-semibold uppercase tracking-wide">
               <tr>
                 <th class="px-4 py-3 text-start">Seleziona</th>
                 <th class="px-4 py-3 w-80">Nome</th>
@@ -192,10 +195,10 @@ watch([page, bookId], load, { immediate: true })
                       :disabled="copies.length === 0"
                       :class="
                         selectedMember?.id === member.id
-                          ? 'bg-gray-500 hover:bg-gray-600'
-                          : 'bg-gray-100 hover:bg-gray-200'
+                          ? 'bg-[#64704a]'
+                          : 'bg-[#ede7da] hover:bg-[#e1d8c6]'
                       "
-                      class="text-white cursor-pointer w-5 h-5 rounded-full border border-black disabled:cursor-not-allowed disabled:opacity-50"
+                      class="h-5 w-5 cursor-pointer rounded-full border border-[#242820]/40 text-[#f5f1e8] disabled:cursor-not-allowed disabled:opacity-50"
                       @click="selectMember(member)"
                     ></button>
                   </div>
@@ -216,7 +219,7 @@ watch([page, bookId], load, { immediate: true })
                 </td>
                 <td class="px-4 py-3 text-center">
                   <span
-                    class="border border-green-500 text-green-700 rounded-full inline-block w-6 h-6 bg-green-200 text-center"
+                    class="inline-block h-6 w-6 rounded-full border border-[#64704a] bg-[#dce3d0] text-center text-[#4f5b39]"
                   >
                     {{ member.loans_count }}
                   </span>
@@ -237,14 +240,14 @@ watch([page, bookId], load, { immediate: true })
           <div class="flex gap-2">
             <button
               :disabled="meta.current_page <= 1 || loading"
-              class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+              class="cursor-pointer border border-[#d45b3e] bg-[#d45b3e] px-3 py-1.5 font-medium text-[#fffdf8] transition hover:bg-[#b94731] disabled:cursor-not-allowed disabled:opacity-50"
               @click="goToPage(meta.current_page - 1)"
             >
               Precedente
             </button>
             <button
               :disabled="meta.current_page >= meta.last_page || loading"
-              class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+              class="cursor-pointer border border-[#d45b3e] bg-[#d45b3e] px-3 py-1.5 font-medium text-[#fffdf8] transition hover:bg-[#b94731] disabled:cursor-not-allowed disabled:opacity-50"
               @click="goToPage(meta.current_page + 1)"
             >
               Successiva
@@ -292,14 +295,14 @@ watch([page, bookId], load, { immediate: true })
             <button
               type="submit"
               :disabled="submitting || selectedCopyId === null || copies.length === 0"
-              class="border border-green-700 bg-green-900 px-4 py-2 text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+              class="border border-[#64704a] bg-[#64704a] px-4 py-2 text-[#f5f1e8] transition hover:bg-[#4f5b39] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {{ submitting ? 'Salvataggio…' : 'Conferma prestito' }}
             </button>
             <button
               type="button"
               :disabled="submitting"
-              class="border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-100"
+              class="border border-[#242820]/25 px-4 py-2 text-[#55594e] transition hover:bg-[#ede7da]"
               @click="cancelLoan"
             >
               Annulla

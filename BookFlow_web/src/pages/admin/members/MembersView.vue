@@ -60,7 +60,9 @@ function goToPage(nextPage: number) {
   router.push({ query: { ...route.query, page: nextPage } })
 }
 
-function formatMemberDate(date: string): string {
+function formatMemberDate(date?: string | null): string {
+  if (!date) return ''
+
   return new Intl.DateTimeFormat('it-IT', {
     day: 'numeric',
     month: 'short',
@@ -94,13 +96,13 @@ watch(page, load, { immediate: true })
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <div class="flex items-center space-x-5">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Membri registrati</h1>
         <p
           v-if="members.length"
-          class="bg-green-300 px-2 inline-flex justify-center items-center font-semibold rounded-lg"
+          class="inline-flex items-center justify-center rounded-lg bg-[#64704a] px-2 font-semibold text-[#f5f1e8]"
         >
           {{ members.length }}
         </p>
@@ -110,27 +112,27 @@ watch(page, load, { immediate: true })
         {{ error }}
       </p>
 
-      <LoaderComponent v-if="loading && members.length === 0" />
+      <LoaderComponent v-if="loading && members.length === 0" admin-theme />
 
       <section v-else>
 
-        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
+        <PaginationComponent :meta="meta" :loading="loading" admin-theme @change="goToPage" />
 
         <div
           class="mt-3 overflow-x-auto border border-slate-300 bg-white transition-opacity"
           :class="{ 'opacity-60': loading }"
         >
           <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
-            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <thead class="text-xs font-semibold uppercase tracking-wide">
               <tr>
                 <th class="px-4 py-3 w-80">Nome</th>
                 <th class="px-4 py-3 w-80">Email</th>
                 <th class="px-4 py-3 w-80">telefono</th>
                 <th class="px-4 py-3 w-80">Indirizzo</th>
-                <th class="px-4 py-3 w-80">Città di Nascita</th>
-                <th class="px-4 py-3 w-80">Data di Nascita</th>
-                <th class="px-4 py-3 w-80">iscritto dal</th>
-                <th class="px-4 py-3 w-80 text-center">Libri in prestito</th>
+                <th class="px-4 py-3 w-80">Città</th>
+                <th class="px-4 py-3 w-200">Data di Nascita</th>
+                <th class="px-4 py-3 w-200">iscritto dal</th>
+                <th class="px-4 py-3 w-200 text-center">Libri in prestito</th>
                 <th class="px-4 py-3 text-end">Azioni</th>
               </tr>
             </thead>
@@ -156,7 +158,7 @@ watch(page, load, { immediate: true })
                 </td>
                 <td class="px-4 py-3 text-center">
                   <span
-                    class="border border-green-500 text-green-700 rounded-full inline-block w-6 h-6 bg-green-200 text-center"
+                     class="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-[#64704a] font-semibold text-[#f5f1e8]"
                   >
                     {{ member.loans_count }}
                   </span>
@@ -165,19 +167,19 @@ watch(page, load, { immediate: true })
                   <div class="text-end space-x-1 flex">
                     <RouterLink
                       :to="`/admin/members/${member.id}/details`"
-                      class="hover:bg-gray-200 text-gray-700 cursor-pointer px-4 py-1 border border-gray-300 font-medium"
+                      class="cursor-pointer border border-[#242820]/25 px-4 py-1 font-medium text-[#55594e] transition hover:bg-[#ede7da]"
                     >
                       Dettagli
                     </RouterLink>
                     <RouterLink
                       :to="`/admin/members/${member.id}/edit`"
-                       class="hover:bg-gray-200 text-blue-700 cursor-pointer px-4 py-1 border border-blue-300 font-medium"
+                       class="cursor-pointer border border-[#64704a]/60 px-4 py-1 font-medium text-[#4f5b39] transition hover:bg-[#e8dfcd]"
                     >
                       Modifica
                     </RouterLink>
                     <button
                       @click="askDelete(member)"
-                       class="hover:bg-gray-200 text-red-700 cursor-pointer px-4 py-1 border border-red-300 font-medium"
+                       class="cursor-pointer border border-[#8d3827]/50 px-4 py-1 font-medium text-[#8d3827] transition hover:bg-[#f5e4de]"
                     >
                       Elimina
                     </button>
@@ -200,7 +202,7 @@ watch(page, load, { immediate: true })
           >?
         </ConfirmDeleteModal>
 
-        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
+        <PaginationComponent :meta="meta" :loading="loading" admin-theme @change="goToPage" />
       </section>
     </main>
   </div>

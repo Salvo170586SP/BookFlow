@@ -48,19 +48,24 @@ async function submit(event: Event) {
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
-      <div class="flex items-center justify-between mb-20">
+      <div class="mb-20 flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Modifica categoria</h1>
-        <RouterLink to="/admin/categories" class="font-semibold">Indietro</RouterLink>
+        <RouterLink
+          to="/admin/categories"
+          class="border border-[#242820]/25 px-3 py-1 font-semibold transition hover:bg-[#ede7da]"
+        >
+          Indietro
+        </RouterLink>
       </div>
 
-      <LoaderComponent v-if="loading" />
+      <LoaderComponent v-if="loading" admin-theme />
 
       <form
         v-else
         @submit.prevent="submit"
-        class="w-100 border border-slate-300 p-5 bg-white mx-auto"
+        class="mx-auto w-100 border border-[#242820]/20 bg-[#fffdf8] p-5"
       >
         <label for="name" class="flex flex-col font-semibold space-y-2">
           <span>Nome*</span>
@@ -75,7 +80,7 @@ async function submit(event: Event) {
 
         <div class="mt-5 text-end">
           <button
-            class="bg-blue-400 hover:bg-blue-700 cursor-pointer px-3 py-1 text-white font-medium border border-gray-300"
+            class="cursor-pointer border border-[#64704a] bg-[#64704a] px-3 py-1 font-medium text-[#f5f1e8] transition hover:bg-[#4f5b39] disabled:cursor-not-allowed disabled:opacity-50"
           >
             Modifica
           </button>

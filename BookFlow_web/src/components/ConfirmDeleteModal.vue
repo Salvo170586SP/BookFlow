@@ -61,14 +61,14 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
         @click.self="close"
       >
         <div
-          class="w-full max-w-105 border border-slate-400 bg-white p-6"
+          class="w-full max-w-105 border border-[#242820]/25 bg-[#fffdf8] p-6 text-[#242820]"
           role="dialog"
           aria-modal="true"
           aria-labelledby="confirm-modal-title"
         >
           <h2 id="confirm-modal-title" class="mb-3 text-lg font-semibold">{{ title }}</h2>
 
-          <div class="mb-6 text-gray-600">
+          <div class="mb-6 text-[#55594e]">
             <!-- Slot: se il genitore passa contenuto, sostituisce il messaggio di default -->
             <slot>{{ message }}</slot>
           </div>
@@ -76,14 +76,14 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
           <div class="flex justify-end gap-2">
             <button
               ref="cancelBtn"
-              class="cursor-pointer bg-gray-200 border border-slate-400 px-4 py-2 text-sm hover:bg-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-60"
+              class="cursor-pointer border border-[#242820]/25 bg-[#ede7da] px-4 py-2 text-sm text-[#242820] transition hover:bg-[#e1d8c6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#64704a] disabled:cursor-not-allowed disabled:opacity-60"
               :disabled="loading"
               @click="close"
             >
               {{ cancelLabel }}
             </button>
             <button
-              class="cursor-pointer bg-red-600 border border-slate-400 px-4 py-2 text-sm text-white hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:cursor-not-allowed disabled:opacity-60"
+              class="cursor-pointer border border-[#8d3827] bg-[#8d3827] px-4 py-2 text-sm text-[#fffdf8] transition hover:bg-[#762f22] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d45b3e] disabled:cursor-not-allowed disabled:opacity-60"
               :disabled="loading"
               @click="emit('confirm')"
             >

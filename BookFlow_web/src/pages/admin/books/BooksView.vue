@@ -6,7 +6,7 @@ import { destroyBooks, fetchBookYears, fetchBooks } from '../../../api/books'
 import type { Book, Named, PaginationMeta } from '../../../types/book'
 import { fetchCategoriesOptions } from '../../../api/categories'
 import LoaderComponent from '../../../components/LoaderComponent.vue'
-import ConfirmDeleteModal from '../../../components/ConfirmDeleteModal.vue'
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal.vue'
 import PaginationComponent from '@/components/PaginationComponent.vue'
 
 const route = useRoute()
@@ -124,7 +124,7 @@ async function load() {
       page.value,
       categoryId.value,
       searchTitle.value.trim() || undefined,
-      year,
+      year
     )
 
     // Se nel frattempo è partita una richiesta più recente, questa risposta è vecchia
@@ -211,23 +211,23 @@ loadYears()
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <div class="flex justify-between items-center">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900 pb-7">Catalogo</h1>
         <RouterLink
-          class="border border-gray-300 px-3 bg-green-400 hover:bg-green-700 font-medium text-white"
+          class="border border-[#64704a] bg-[#64704a] px-10 py-1 text-lg font-medium text-[#f5f1e8] transition hover:bg-[#4f5b39]"
           to="/admin/books/create"
         >
           Crea
         </RouterLink>
       </div>
 
-      <LoaderComponent v-if="loading && books.length === 0" />
+      <LoaderComponent v-if="loading && books.length === 0" admin-theme />
 
       <section v-else>
         <div class="space-x-5 flex items-center">
-          <label for="byTitle" class="flex flex-col">
+          <label for="byTitle" class="flex flex-col font-medium">
             Cerca per titolo
             <input
               type="text"
@@ -238,7 +238,7 @@ loadYears()
             />
           </label>
 
-          <label for="categories" class="flex flex-col">
+          <label for="categories" class="flex flex-col font-medium">
             Cerca per categoria
             <select
               id="categories"
@@ -248,13 +248,18 @@ loadYears()
               @change="filterByCategory"
             >
               <option value="">-Seleziona-</option>
-              <option v-for="category in categories" :key="category.id" :value="category.id">
+              <option
+                v-for="category in categories"
+                class="font-medium"
+                :key="category.id"
+                :value="category.id"
+              >
                 {{ category.name }}
               </option>
             </select>
           </label>
 
-          <label for="publishedYear" class="flex flex-col">
+          <label for="publishedYear" class="flex flex-col font-medium">
             Anno di pubblicazione
             <select
               id="publishedYear"
@@ -262,7 +267,7 @@ loadYears()
               class="w-50 border border-gray-300 bg-white"
             >
               <option value="">Tutti gli anni</option>
-              <option v-for="year in availableYears" :key="year" :value="year">
+              <option v-for="year in availableYears" class="font-medium" :key="year" :value="year">
                 {{ year }}
               </option>
             </select>
@@ -273,7 +278,7 @@ loadYears()
           {{ error }}
         </p>
 
-        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
+        <PaginationComponent :meta="meta" :loading="loading" admin-theme @change="goToPage" />
 
         <div
           class="mt-3 cursor-grab overflow-x-hidden border border-slate-300 bg-white transition-opacity"
@@ -284,7 +289,7 @@ loadYears()
           @pointercancel="stopTableDrag"
         >
           <table class="w-full min-w-max divide-y divide-slate-200 text-left text-sm">
-            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <thead class="text-xs font-semibold uppercase tracking-wide">
               <tr>
                 <th class="min-w-56 px-4 py-3">Titolo</th>
                 <th class="min-w-32 px-4 py-3 text-center">Copie totali</th>
@@ -294,70 +299,76 @@ loadYears()
                 <th class="min-w-56 px-4 py-3">Editore</th>
                 <th class="min-w-24 px-4 py-3">Anno</th>
                 <th
-                  class="actions-column sticky right-0 z-20 min-w-max bg-slate-50 px-4 py-3 text-end"
+                  class="relative sticky right-0 z-50 min-w-max bg-[#fffdf8] px-4 py-3 text-end before:pointer-events-none before:absolute before:inset-y-0 before:-left-3 before:w-3 before:bg-gradient-to-r before:from-transparent before:to-[#242820]/10 before:content-['']"
                 >
                   Azioni
                 </th>
               </tr>
             </thead>
 
-            <tbody class="divide-y divide-slate-100">
+            <tbody class="divide-y">
               <tr v-for="book in books" :key="book.id">
-                <td class="min-w-56 px-4 py-3 font-medium text-slate-900">{{ book.title }}</td>
-                <td class="min-w-32 px-4 py-3 text-center text-slate-600">
+                <td class="min-w-56 px-4 py-3 font-medium">{{ book.title }}</td>
+                <td class="min-w-32 px-4 py-3 text-center">
                   <span
-                    class="inline-flex w-6 h-6 bg-gray-200 items-center justify-center rounded-lg font-bold"
+                    class="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-[#64704a] font-semibold text-[#f5f1e8]"
                   >
                     {{ book.total_copies_count }}
                   </span>
                 </td>
-                <td class="min-w-36 px-4 py-3 text-center text-slate-600">
+                <td class="min-w-36 px-4 py-3 text-center">
                   <span
-                    class="inline-flex w-6 h-6 bg-gray-200 items-center justify-center rounded-lg font-bold"
+                    class="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-[#64704a] font-semibold text-[#f5f1e8]"
                   >
                     {{ book.remaining_copies_count }}
                   </span>
                 </td>
-                <td class="min-w-64 px-4 py-3 text-xs text-slate-600">
+                <td class="min-w-64 px-4 py-3 text-xs">
                   {{ book.authors.map((a) => a.name).join(', ') }}
                 </td>
-                <td class="min-w-40 px-4 py-3 text-slate-600">{{ book.category.name }}</td>
-                <td class="min-w-56 px-4 py-3 text-xs text-slate-600">
+                <td class="min-w-40 px-4 py-3">
+                  <span
+                    class="inline-flex px-3 py-1 items-center justify-center rounded-lg bg-green-700/80 font-semibold text-[#f5f1e8]"
+                  >
+                    {{ book.category.name }}
+                  </span>
+                </td>
+                <td class="min-w-56 px-4 py-3 text-xs">
                   {{ book.publisher?.name ?? '—' }}
                 </td>
-                <td class="min-w-24 px-4 py-3 text-slate-600">{{ book.published_year ?? '—' }}</td>
+                <td class="min-w-24 px-4 py-3">{{ book.published_year ?? '—' }}</td>
                 <td
-                  class="actions-column sticky right-0 z-10 min-w-max bg-white px-4 py-3 text-slate-600"
+                  class="relative sticky right-0 z-50 min-w-max bg-[#fffdf8] px-4 py-3 before:pointer-events-none before:absolute before:inset-y-0 before:-left-3 before:w-3 before:bg-gradient-to-r before:from-transparent before:to-[#242820]/10 before:content-['']"
                 >
                   <div class="flex items-center gap-2">
                     <RouterLink
                       :to="`/admin/books/${book.id}/details`"
-                      class="border border-gray-300 font-medium w-20 text-center py-1 hover:bg-gray-200 text-gray-700"
+                      class="w-20 border border-[#242820]/25 py-1 text-center font-medium transition hover:bg-[#ede7da]"
                       >Dettagli</RouterLink
                     >
                     <RouterLink
                       :to="`/admin/books/${book.id}/edit`"
-                      class="border border-gray-300 font-medium w-20 text-center py-1 hover:bg-gray-200 text-gray-700"
+                      class="w-20 border border-[#242820]/25 py-1 text-center font-medium transition hover:bg-[#ede7da]"
                       >Modifica</RouterLink
                     >
                     <RouterLink
                       :to="`/admin/books/${book.id}/addCopies`"
-                      class="border border-emerald-300 hover:bg-emerald-200 font-medium w-30 text-center py-1 text-emerald-700"
+                      class="w-30 border border-[#64704a]/60 py-1 text-center font-medium text-[#4f5b39] transition hover:bg-[#e8dfcd]"
                       >Aggiungi copie</RouterLink
                     >
                     <RouterLink
                       :to="`/admin/books/${book.id}/editCopies`"
-                      class="border border-blue-300 font-medium w-30 text-center py-1 hover:bg-gray-200 text-blue-700"
+                      class="w-30 border border-[#64704a]/60 py-1 text-center font-medium text-[#4f5b39] transition hover:bg-[#e8dfcd]"
                       >Modifica copie</RouterLink
                     >
                     <RouterLink
                       :to="`/admin/books/${book.id}/addLoan`"
-                      class="border border-blue-300 font-medium text-center py-1 px-3 hover:bg-gray-200 text-blue-700"
+                      class="border border-[#64704a]/60 px-3 py-1 text-center font-medium text-[#4f5b39] transition hover:bg-[#e8dfcd]"
                       >Presta</RouterLink
                     >
                     <button
                       @click="askDelete(book)"
-                      class="border border-red-300 font-medium text-center py-1 px-3 hover:bg-gray-200 text-red-700"
+                      class="border border-[#8d3827]/50 px-3 py-1 text-center font-medium text-[#8d3827] transition hover:bg-[#f5e4de]"
                     >
                       Elimina
                     </button>
@@ -383,21 +394,8 @@ loadYears()
           </p>
         </ConfirmDeleteModal>
 
-        <PaginationComponent :meta="meta" :loading="loading" @change="goToPage" />
+        <PaginationComponent :meta="meta" :loading="loading" admin-theme @change="goToPage" />
       </section>
     </main>
   </div>
 </template>
-
-<style scoped>
-.actions-column::before {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -12px;
-  width: 12px;
-  background: linear-gradient(to right, transparent, rgba(15, 23, 42, 0.11));
-  content: '';
-  pointer-events: none;
-}
-</style>

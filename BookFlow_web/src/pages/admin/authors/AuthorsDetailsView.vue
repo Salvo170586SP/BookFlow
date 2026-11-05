@@ -42,31 +42,36 @@ watch(() => route.params.id, load, { immediate: true })
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Dettagli Autore</h1>
-        <RouterLink to="/admin/authors">Indietro</RouterLink>
+        <RouterLink
+          to="/admin/authors"
+          class="border border-[#242820]/25 px-3 py-1 font-semibold transition hover:bg-[#ede7da]"
+        >
+          Indietro
+        </RouterLink>
       </div>
 
-      <LoaderComponent v-if="loading" />
+      <LoaderComponent v-if="loading" admin-theme />
 
       <p v-else-if="error" class="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ error }}
       </p>
 
-      <section v-else-if="author" class="mt-6 border border-slate-300 bg-white p-6">
+      <section v-else-if="author" class="mt-6 border border-[#242820]/20 bg-[#fffdf8] p-6">
         <h2 class="text-lg font-semibold text-slate-900">{{ author.name }}</h2>
         <p class="mt-3 whitespace-pre-wrap text-sm text-slate-600">
           {{ author.bio || 'Nessuna biografia disponibile.' }}
         </p>
       </section>
 
-      <section v-else class="mt-6 border border-slate-300 bg-white p-6">
+      <section v-else class="mt-6 border border-[#242820]/20 bg-[#fffdf8] p-6">
         <p class="text-sm text-slate-600">Autore non trovato.</p>
       </section>
 
-      <section v-if="author" class="mt-6 border border-slate-300 bg-white p-6">
+      <section v-if="author" class="mt-6 border border-[#242820]/20 bg-[#fffdf8] p-6">
         <p class="text-lg font-semibold text-slate-900 mb-5">Libri</p>
         <div v-if="author.books.length" class="mt-3 flex flex-wrap space-y-2">
           <div

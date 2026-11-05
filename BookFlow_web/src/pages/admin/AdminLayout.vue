@@ -17,19 +17,40 @@ async function logout() {
 </script>
 
 <template>
-  <div class="h-screen bg-slate-50 flex">
+  <div class="flex min-h-screen bg-[#f5f1e8] text-[#242820]">
     <section
-      class="h-full w-80 border-e border-slate-300 bg-gray-200 text-gray-500 px-4 py-4 flex flex-col"
+      class="sticky top-0 flex h-screen w-72 shrink-0 flex-col border-e border-[#242820]/20 bg-[#ede7da] px-4 py-5 text-[#55594e]"
     >
       <div class="flex flex-1 flex-col">
-        <span class="font-medium w-full pb-3 text-center">BookFlow Manager</span>
+        <RouterLink
+          to="/admin/dashboard"
+          class="mb-5 flex items-center gap-3 border-b border-[#242820]/20 px-2 pb-5"
+          aria-label="BookFlow Manager, dashboard"
+        >
+          <span class="grid size-10 shrink-0 place-items-center bg-[#d45b3e] text-[#f5f1e8]">
+            <svg viewBox="0 0 24 24" fill="none" class="size-6" aria-hidden="true">
+              <path
+                d="M12 6.5C9.5 4.8 6.4 4.5 3 5.5v13c3.4-1 6.5-.7 9 1 2.5-1.7 5.6-2 9-1v-13c-3.4-1-6.5-.7-9 1Zm0 0v13"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="square"
+              />
+            </svg>
+          </span>
+          <span>
+            <span class="block text-lg font-black tracking-tight text-[#242820]">Bookflow</span>
+            <span class="block text-[10px] font-bold uppercase tracking-[0.16em] text-[#64704a]"
+              >Area manager</span
+            >
+          </span>
+        </RouterLink>
 
-        <div class="flex flex-1 flex-col space-y-5 border-t border-gray-300 py-5 text-sm">
+        <div class="flex flex-1 flex-col gap-2 py-2 text-sm">
           <RouterLink
             to="/admin/books"
-            class="cursor-pointer px-3 py-1.5 font-medium hover:bg-gray-300 flex items-center gap-3"
+            class="flex cursor-pointer items-center gap-3 border-l-2 border-transparent px-3 py-2.5 font-semibold transition-colors hover:bg-[#e8dfcd]/70 hover:text-[#242820]"
             :class="{
-              'bg-gray-300 text-gray-800': isActive('/admin/books'),
+              'border-[#d45b3e] bg-[#e8dfcd] text-[#242820]': isActive('/admin/books'),
             }"
           >
             <svg
@@ -50,9 +71,9 @@ async function logout() {
           </RouterLink>
 
           <RouterLink
-            class="cursor-pointer px-3 py-1.5 font-medium transition hover:bg-gray-300 flex items-center gap-3"
+            class="flex cursor-pointer items-center gap-3 border-l-2 border-transparent px-3 py-2.5 font-semibold transition-colors hover:bg-[#e8dfcd]/70 hover:text-[#242820]"
             :class="{
-              'bg-gray-300 text-gray-800': isActive('/admin/authors'),
+              'border-[#d45b3e] bg-[#e8dfcd] text-[#242820]': isActive('/admin/authors'),
             }"
             to="/admin/authors"
           >
@@ -75,9 +96,9 @@ async function logout() {
           </RouterLink>
 
           <RouterLink
-            class="cursor-pointer px-3 py-1.5 font-medium hover:bg-gray-300 flex items-center gap-3"
+            class="flex cursor-pointer items-center gap-3 border-l-2 border-transparent px-3 py-2.5 font-semibold transition-colors hover:bg-[#e8dfcd]/70 hover:text-[#242820]"
             :class="{
-              'bg-gray-300 text-gray-800': isActive('/admin/categories'),
+              'border-[#d45b3e] bg-[#e8dfcd] text-[#242820]': isActive('/admin/categories'),
             }"
             to="/admin/categories"
           >
@@ -100,11 +121,11 @@ async function logout() {
             Categorie
           </RouterLink>
 
-          <hr class="border border-gray-300" />
+          <hr class="my-3 border-t border-[#242820]/20" />
 
           <RouterLink
-            class="cursor-pointer px-3 py-1.5 font-medium hover:bg-gray-300 flex items-center gap-3"
-            :class="{ 'bg-gray-300 text-gray-800': isActive('/admin/members') }"
+            class="flex cursor-pointer items-center gap-3 border-l-2 border-transparent px-3 py-2.5 font-semibold transition-colors hover:bg-[#e8dfcd]/70 hover:text-[#242820]"
+            :class="{ 'border-[#d45b3e] bg-[#e8dfcd] text-[#242820]': isActive('/admin/members') }"
             to="/admin/members"
           >
             <svg
@@ -126,8 +147,8 @@ async function logout() {
           </RouterLink>
 
           <RouterLink
-            class="cursor-pointer px-3 py-1.5 font-medium hover:bg-gray-300 flex items-center gap-3"
-            :class="{ 'bg-gray-300 text-gray-800': isActive('/admin/dashboard') }"
+            class="flex cursor-pointer items-center gap-3 border-l-2 border-transparent px-3 py-2.5 font-semibold transition-colors hover:bg-[#e8dfcd]/70 hover:text-[#242820]"
+            :class="{ 'border-[#d45b3e] bg-[#e8dfcd] text-[#242820]': isActive('/admin/dashboard') }"
             to="/admin/dashboard"
           >
             <svg
@@ -150,7 +171,7 @@ async function logout() {
         </div>
 
         <button
-          class="cursor-pointer px-3 py-1.5 text-start font-medium text-gray-500 transition hover:bg-gray-300 flex items-center gap-3"
+          class="flex cursor-pointer items-center gap-3 border-t border-[#242820]/20 px-3 py-4 text-start font-semibold text-[#55594e] transition-colors hover:bg-[#e8dfcd]/70 hover:text-[#242820]"
           @click="logout"
         >
           <svg
@@ -173,7 +194,17 @@ async function logout() {
       </div>
     </section>
 
-    <section class="overflow-auto h-full w-full">
+    <section
+      class="min-w-0 flex-1 overflow-auto
+        [&_h1]:text-[#242820] [&_h2]:text-[#242820]
+        [&_thead]:bg-[#64704a] [&_thead]:text-[#f5f1e8] [&_thead_tr]:bg-[#64704a]
+        [&_tbody]:divide-[#242820]/10 [&_tbody_tr:hover]:bg-[#ede7da]/70
+        [&_input:not([type=checkbox])]:border-[#242820]/25 [&_input:not([type=checkbox])]:bg-[#fffdf8] [&_input:not([type=checkbox])]:px-3 [&_input:not([type=checkbox])]:py-2
+        [&_select]:border-[#242820]/25 [&_select]:bg-[#fffdf8] [&_select]:px-3 [&_select]:py-2
+        [&_textarea]:border-[#242820]/25 [&_textarea]:bg-[#fffdf8] [&_textarea]:px-3 [&_textarea]:py-2
+        [&_form]:border-[#242820]/20 [&_form]:bg-[#fffdf8]
+        [&_section.border]:border-[#242820]/20 [&_section.border]:bg-[#fffdf8]"
+    >
       <RouterView v-if="auth.hasRole('admin')"></RouterView>
     </section>
   </div>

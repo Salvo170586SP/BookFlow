@@ -29,13 +29,13 @@ async function submit() {
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <div class="flex items-center justify-between mb-20">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Crea categoria</h1>
         <RouterLink
           to="/admin/categories"
-          class="font-semibold"
+          class="border border-[#242820]/25 px-3 py-1 font-semibold transition hover:bg-[#ede7da]"
           >Indietro</RouterLink
         >
       </div>
@@ -54,7 +54,7 @@ async function submit() {
 
         <div class="mt-5 text-end">
           <button
-            class="bg-green-400 hover:bg-green-700 cursor-pointer border border-gray-300 px-3 py-1 text-white font-medium"
+            class="cursor-pointer border border-[#64704a] bg-[#64704a] px-3 py-1 font-medium text-[#f5f1e8] transition hover:bg-[#4f5b39] disabled:cursor-not-allowed disabled:opacity-50"
           >
             Crea
           </button>

@@ -58,22 +58,27 @@ async function submit() {
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <div class="flex items-center justify-between mb-20">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Modifica membro</h1>
-        <RouterLink to="/admin/members">Indietro</RouterLink>
+        <RouterLink
+          to="/admin/members"
+          class="border border-[#242820]/25 px-3 py-1 font-semibold transition hover:bg-[#ede7da]"
+        >
+          Indietro
+        </RouterLink>
       </div>
       <p v-if="formError" class="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ formError }}
       </p>
 
-      <LoaderComponent v-if="loading" />
+      <LoaderComponent v-if="loading" admin-theme />
 
       <form
         v-else
         @submit.prevent="submit"
-        class="w-100 p-5 bg-white mx-auto border border-slate-300"
+        class="mx-auto w-100 border border-[#242820]/20 bg-[#fffdf8] p-5"
       >
         <fieldset :disabled="loading || loadingMember || loadFailed" class="disabled:opacity-60">
           <label for="name" class="flex flex-col font-semibold mb-2">
@@ -139,7 +144,7 @@ async function submit() {
 
           <div class="mt-5 text-end">
             <button
-              class="bg-blue-300 hover:bg-blue-500 cursor-pointer border border-blue-300 px-3 py-1 text-white font-medium"
+              class="cursor-pointer border border-[#64704a] bg-[#64704a] px-3 py-1 font-medium text-[#f5f1e8] transition hover:bg-[#4f5b39] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {{
                 loadingMember

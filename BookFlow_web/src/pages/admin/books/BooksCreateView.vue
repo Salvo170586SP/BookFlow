@@ -142,13 +142,13 @@ async function submit() {
 </script>
 
 <template>
-  <div class="min-h-full bg-slate-50">
+  <div class="min-h-full bg-[#f5f1e8]">
     <main class="p-10">
       <div class="flex items-center justify-between mb-20">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">Crea Libro</h1>
-        <RouterLink to="/admin/books" class="font-semibold">Indietro</RouterLink>
+        <RouterLink to="/admin/books" class="border border-[#242820]/25 px-3 py-1 font-semibold transition hover:bg-[#ede7da]">Indietro</RouterLink>
       </div>
-      <form @submit.prevent="submit" class="w-full p-5 border border-slate-300 bg-white mx-auto">
+      <form @submit.prevent="submit" class="mx-auto w-full border border-[#242820]/20 bg-[#fffdf8] p-5">
         <div class="grid grid-cols-2 gap-3">
           <div>
             <div class="mb-2">
@@ -406,7 +406,7 @@ async function submit() {
             :disabled="
               loading || categoriesLoading || categoriesError !== null || categories.length === 0
             "
-            class="bg-green-400 hover:bg-green-700 cursor-pointer border border-gray-300 px-3 py-1 text-white font-medium"
+            class="cursor-pointer border border-[#64704a] bg-[#64704a] px-3 py-1 font-medium text-[#f5f1e8] transition hover:bg-[#4f5b39] disabled:cursor-not-allowed disabled:opacity-50"
           >
             Crea
           </button>
