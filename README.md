@@ -124,14 +124,9 @@ npm run build
 
 ## Immagini
 
-Il repository non include screenshot dell'interfaccia. Per aggiungerli, salva le immagini, ad esempio, in `docs/screenshots/` e inseriscile nel README con percorsi relativi:
+Gli screenshot dell'interfaccia sono salvati in `docs/screenshots/`. Per visualizzarli, usa la sintassi Markdown direttamente nel README, senza racchiuderla in un blocco di codice:
 
-```markdown
 ![Schermata home](./docs/screenshots/home-guest.png)
-![Schermata di accesso](./docs/screenshots/login.png)
-![Catalogo dei libri](./docs/screenshots/catalogo.png)
-![Dashboard amministratore](./docs/screenshots/dashboard-admin.png)
-```
 
 Le copertine dei libri caricate dall'applicazione vengono salvate sul disco pubblico di Laravel; `artisan storage:link` crea il collegamento necessario per servirle.
 
